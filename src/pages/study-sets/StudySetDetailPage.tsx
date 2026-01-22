@@ -94,7 +94,7 @@ export default function StudySetDetailPage() {
 
   // Shuffle when ENTERING learn mode (only once per session)
   useEffect(() => {
-    console.log("📊 Shuffle Effect - viewMode:", viewMode, "hasShuffled:", hasShuffledRef.current, "needReviewCards:", needReviewCards.length);
+    console.log("📊 Shuffle Effect - viewMode:", viewMode, "hasShuffled:", hasShuffledRef.current, "needReviewCards:", needReviewCards.length, "allFlashcards:", allFlashcards.length);
     
     if (viewMode === "learn" && !hasShuffledRef.current) {
       console.log("✓ Condition met: entering learn mode for first time");
@@ -102,21 +102,26 @@ export default function StudySetDetailPage() {
       // Mark as shuffled FIRST to prevent re-running
       hasShuffledRef.current = true;
 
-      if (needReviewCards.length > 0) {
+      // Fallback: nếu needReviewCards rỗng nhưng allFlashcards có data, dùng allFlashcards
+      const cardsToShuffle = needReviewCards.length > 0 ? needReviewCards : allFlashcards;
+
+      if (cardsToShuffle.length > 0) {
         console.log(
           "🔄 Entering learn mode, shuffling",
-          needReviewCards.length,
-          "cards that need review"
+          cardsToShuffle.length,
+          "cards (from",
+          needReviewCards.length > 0 ? "needReviewCards" : "allFlashcards",
+          ")"
         );
-        const shuffled = shuffleArray(needReviewCards);
+        const shuffled = shuffleArray(cardsToShuffle);
         console.log("✅ Shuffled result:", shuffled.map((c: any) => c.term));
         setShuffledFlashcards(shuffled);
       } else {
-        console.log("⚠️ needReviewCards is empty! Cannot shuffle");
+        console.log("⚠️ No cards to shuffle!");
         setShuffledFlashcards([]);
       }
     }
-  }, [viewMode, needReviewCards]);
+  }, [viewMode, needReviewCards, allFlashcards]);
 
   // Clear shuffle when leaving learn mode
   useEffect(() => {

@@ -78,6 +78,7 @@ export const FlashcardLearner = ({
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isFlipped, setIsFlipped] = useState(false);
   const [isComplete, setIsComplete] = useState(false);
+  const [selectedDifficulty, setSelectedDifficulty] = useState<"easy" | "medium" | "hard" | null>(null);
 
   // Mutation: Mark flashcard as mastered
   const masterMutation = useMasterFlashcard();
@@ -147,9 +148,20 @@ export const FlashcardLearner = ({
     if (currentIndex < cards.length - 1) {
       setCurrentIndex(currentIndex + 1);
       setIsFlipped(false);
+      setSelectedDifficulty(null); // Reset selection cho thẻ tiếp theo
     } else {
       setIsComplete(true);
     }
+  };
+
+  const handleSubmitReview = async () => {
+    if (!selectedDifficulty) {
+      console.warn("Vui lòng chọn mức độ nhớ");
+      return;
+    }
+
+    const isCorrect = selectedDifficulty !== "hard";
+    await handleReview(selectedDifficulty, isCorrect);
   };
 
   const handlePrevious = () => {
@@ -472,34 +484,85 @@ export const FlashcardLearner = ({
           </button>
         </div>
 
-        {/* Review Buttons - Đánh giá mức độ nhớ */}
-        <div className="grid grid-cols-3 gap-2 mb-6">
-          <button
-            onClick={() => handleReview("hard", false)}
-            disabled={reviewMutation.isPending || masterMutation.isPending}
-            className="px-3 py-3 bg-red-500 hover:bg-red-600 disabled:bg-gray-400 text-white rounded-lg font-medium text-sm transition"
-          >
-            {reviewMutation.isPending || masterMutation.isPending ? "⏳" : "🔴"}
-            <span className="block text-xs mt-1">Khó Nhớ</span>
-          </button>
+        {/* Review Level Selection - Radio Style (Horizontal) */}
+        <div className="mb-6">
+          <p className="text-gray-700 font-medium mb-3">Đánh giá mức độ nhớ:</p>
+          <div className="grid grid-cols-3 gap-2">
+            {/* Khó Nhớ */}
+            <button
+              onClick={() => setSelectedDifficulty("hard")}
+              className={`flex flex-col items-center justify-center gap-2 px-3 py-3 rounded-lg border-2 transition ${
+                selectedDifficulty === "hard"
+                  ? "border-red-500 bg-red-50"
+                  : "border-gray-200 bg-white hover:border-red-300"
+              }`}
+            >
+              <div
+                className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
+                  selectedDifficulty === "hard"
+                    ? "border-red-500 bg-red-500"
+                    : "border-gray-300"
+                }`}
+              >
+                {selectedDifficulty === "hard" && (
+                  <div className="w-2 h-2 bg-white rounded-full" />
+                )}
+              </div>
+              <span className="text-center text-sm font-medium text-gray-800">
+                🔴 Khó Nhớ
+              </span>
+            </button>
 
-          <button
-            onClick={() => handleReview("medium", true)}
-            disabled={reviewMutation.isPending || masterMutation.isPending}
-            className="px-3 py-3 bg-yellow-500 hover:bg-yellow-600 disabled:bg-gray-400 text-white rounded-lg font-medium text-sm transition"
-          >
-            {reviewMutation.isPending || masterMutation.isPending ? "⏳" : "🟡"}
-            <span className="block text-xs mt-1">Bình Thường</span>
-          </button>
+            {/* Bình Thường */}
+            <button
+              onClick={() => setSelectedDifficulty("medium")}
+              className={`flex flex-col items-center justify-center gap-2 px-3 py-3 rounded-lg border-2 transition ${
+                selectedDifficulty === "medium"
+                  ? "border-yellow-500 bg-yellow-50"
+                  : "border-gray-200 bg-white hover:border-yellow-300"
+              }`}
+            >
+              <div
+                className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
+                  selectedDifficulty === "medium"
+                    ? "border-yellow-500 bg-yellow-500"
+                    : "border-gray-300"
+                }`}
+              >
+                {selectedDifficulty === "medium" && (
+                  <div className="w-2 h-2 bg-white rounded-full" />
+                )}
+              </div>
+              <span className="text-center text-sm font-medium text-gray-800">
+                🟡 Bình Thường
+              </span>
+            </button>
 
-          <button
-            onClick={() => handleReview("easy", true)}
-            disabled={reviewMutation.isPending || masterMutation.isPending}
-            className="px-3 py-3 bg-green-500 hover:bg-green-600 disabled:bg-gray-400 text-white rounded-lg font-medium text-sm transition"
-          >
-            {reviewMutation.isPending || masterMutation.isPending ? "⏳" : "🟢"}
-            <span className="block text-xs mt-1">Đã Thuộc</span>
-          </button>
+            {/* Đã Thuộc */}
+            <button
+              onClick={() => setSelectedDifficulty("easy")}
+              className={`flex flex-col items-center justify-center gap-2 px-3 py-3 rounded-lg border-2 transition ${
+                selectedDifficulty === "easy"
+                  ? "border-green-500 bg-green-50"
+                  : "border-gray-200 bg-white hover:border-green-300"
+              }`}
+            >
+              <div
+                className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
+                  selectedDifficulty === "easy"
+                    ? "border-green-500 bg-green-500"
+                    : "border-gray-300"
+                }`}
+              >
+                {selectedDifficulty === "easy" && (
+                  <div className="w-2 h-2 bg-white rounded-full" />
+                )}
+              </div>
+              <span className="text-center text-sm font-medium text-gray-800">
+                🟢 Đã Thuộc
+              </span>
+            </button>
+          </div>
         </div>
 
         {/* Navigation Buttons */}
@@ -512,15 +575,15 @@ export const FlashcardLearner = ({
             ← Trước
           </button>
           <button
-            onClick={handleNext}
-            disabled={reviewMutation.isPending || masterMutation.isPending}
+            onClick={handleSubmitReview}
+            disabled={!selectedDifficulty || reviewMutation.isPending || masterMutation.isPending}
             className="flex-1 px-4 py-3 bg-blue-500 hover:bg-blue-600 disabled:bg-gray-400 text-white rounded-lg font-medium transition"
           >
             {reviewMutation.isPending || masterMutation.isPending
               ? "Đang gửi..."
               : currentIndex === cards.length - 1
                 ? "Hoàn Thành →"
-                : "Bỏ Qua →"}
+                : "Tiếp Theo →"}
           </button>
         </div>
       </div>
