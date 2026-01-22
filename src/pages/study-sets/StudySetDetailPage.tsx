@@ -6,9 +6,10 @@ import { useNeedReviewCards, shuffleArray } from "../../hooks/useNeedReviewCards
 import { StudySetDetail } from "../../components/StudySetDetail";
 import { FlashcardLearner } from "../../components/FlashcardLearner";
 import { TestMode } from "../../components/TestMode";
+import { ReflexMode } from "../../components/ReflexMode";
 import type { StudySet } from "../../types";
 
-type ViewMode = "detail" | "learn" | "test";
+type ViewMode = "detail" | "learn" | "test" | "reflex";
 
 export default function StudySetDetailPage() {
   console.log("=== StudySetDetailPage RENDER ===");
@@ -324,6 +325,17 @@ export default function StudySetDetailPage() {
     );
   }
 
+  if (viewMode === "reflex") {
+    return (
+      <ReflexMode
+        flashcards={learnCards}
+        title={studySet.title}
+        studySetId={studySetId}
+        onBack={handleBackToDetail}
+      />
+    );
+  }
+
   // Detail view
   console.log("=== RENDERING StudySetDetail ===");
   return (
@@ -334,6 +346,7 @@ export default function StudySetDetailPage() {
       onBack={() => window.history.back()}
       onLearnClick={handleLearnClick}
       onTestClick={() => setViewMode("test")}
+      onReflexClick={() => setViewMode("reflex")}
     />
   );
 }
