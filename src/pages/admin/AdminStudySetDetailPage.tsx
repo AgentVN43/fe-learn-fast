@@ -20,6 +20,7 @@ interface StudySet {
   isPublic: boolean;
   tags: string[];
   flashcardCount: number;
+  flashcards: Flashcard[];
 }
 
 export default function AdminStudySetDetailPage() {

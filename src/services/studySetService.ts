@@ -49,10 +49,11 @@ export const studySetService = {
 
   // Get user study sets
   getUserStudySets: async (userId: string, includeArchived = false) => {
-    return apiCall(
+    const response = await apiCall<{ success: boolean; data: StudySet[] }>(
       `/study-sets/user/${userId}?includeArchived=${includeArchived}`,
       { method: "GET" }
     );
+    return response.data || [];
   },
 
   // Archive study set

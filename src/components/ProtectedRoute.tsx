@@ -24,12 +24,12 @@ export const ProtectedRoute = ({
   }
 
   if (!user) {
-    navigate({ to: "/login", replace: true });
+    navigate("/login", { replace: true });
     return null;
   }
 
   if (requiredRole && user.role !== requiredRole) {
-    navigate({ to: "/", replace: true });
+    navigate("/", { replace: true });
     return null;
   }
 

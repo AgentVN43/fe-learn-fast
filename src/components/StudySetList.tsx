@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../hooks/useAuth";
 import { studySetService } from "../services/studySetService";
 import type { StudySet } from "../types";
 import { HiTrash, HiPencil, HiHeart } from "react-icons/hi";
@@ -21,6 +22,7 @@ export const StudySetList = ({
   const [page, setPage] = useState(1);
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const { user } = useAuth();
   const limit = 10;
 
   // Fetch study sets
@@ -99,10 +101,7 @@ export const StudySetList = ({
               {showActions && (
                 <div className="flex gap-1">
                   <button
-                    onClick={() =>
-                      onEditClick &&
-                      onEditClick(studySet)
-                    }
+                    onClick={() => onEditClick && onEditClick(studySet)}
                     className="p-1 text-blue-500 hover:bg-blue-100 rounded transition"
                   >
                     <HiPencil className="w-5 h-5" />
@@ -161,9 +160,15 @@ export const StudySetList = ({
             {/* Actions */}
             <div className="flex gap-2">
               <button
-                onClick={() =>
-                  navigate(`/study-sets/${studySet.id || studySet._id || ""}`)
-                }
+                onClick={() => {
+                  if (!user) {
+                    navigate("/login");
+                  } else {
+                    navigate(
+                      `/study-sets/${studySet.id || studySet._id || ""}`,
+                    );
+                  }
+                }}
                 className="flex-1 bg-blue-500 hover:bg-blue-600 text-white px-3 py-2 rounded transition text-sm"
               >
                 Xem Chi Tiết
@@ -197,9 +202,7 @@ export const StudySetList = ({
             Trang {pagination.page} / {pagination.pages}
           </span>
           <button
-            onClick={() =>
-              setPage(Math.min(pagination.pages, page + 1))
-            }
+            onClick={() => setPage(Math.min(pagination.pages, page + 1))}
             disabled={page === pagination.pages}
             className="px-4 py-2 border border-gray-300 rounded disabled:opacity-50 hover:bg-gray-50 transition"
           >

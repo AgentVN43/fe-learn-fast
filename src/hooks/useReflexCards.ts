@@ -45,24 +45,12 @@ export const useReflexGrade = () => {
       difficulty: "easy" | "hard";
       reactionTime: number; // milliseconds
     }) => {
-      const response = await fetch(
-        `/api/progress/${flashcardId}/study-set/${studySetId}/reflex-grade`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            difficulty,
-            reactionTime,
-            isCorrect: difficulty === "easy",
-          }),
-        }
+      return progressService.submitReflexGrade(
+        flashcardId,
+        studySetId,
+        difficulty,
+        reactionTime
       );
-
-      if (!response.ok) {
-        throw new Error(`Failed to grade reflex: ${response.statusText}`);
-      }
-
-      return response.json();
     },
     onSuccess: (_, { studySetId }) => {
       console.log("✅ Reflex grade recorded");

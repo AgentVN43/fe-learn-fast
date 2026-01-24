@@ -1,6 +1,6 @@
 import type { Actress, Movie } from "../types";
 
-const API_BASE_URL = "https://zone69.annk.info/api";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000/api";
 
 // Helper: xử lý lỗi và parse JSON
 async function api<T>(endpoint: string, config: RequestInit = {}): Promise<T> {

@@ -1,16 +1,29 @@
 @import "tailwindcss";
 
 :root {
-  font-family: "Inter", "Be Vietnam Pro", "Space Grotesk", system-ui, -apple-system,
-    BlinkMacSystemFont, "Segoe UI", sans-serif;
-  line-height: 1.5;
+  font-family: "Inter", "Be Vietnam Pro", "Segoe UI", system-ui, -apple-system,
+    BlinkMacSystemFont, sans-serif;
+  line-height: 1.6;
   font-weight: 400;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  color-scheme: dark;
-  background-color: #020617;
+  color-scheme: light;
+
+  /* Education color palette */
+  --primary: #3b82f6;
+  --primary-dark: #1e40af;
+  --secondary: #8b5cf6;
+  --success: #10b981;
+  --warning: #f59e0b;
+  --danger: #ef4444;
+  --neutral-50: #f9fafb;
+  --neutral-100: #f3f4f6;
+  --neutral-200: #e5e7eb;
+  --neutral-300: #d1d5db;
+  --neutral-600: #4b5563;
+  --neutral-900: #111827;
 }
 
 *,
@@ -19,16 +32,18 @@
   box-sizing: border-box;
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
 body {
   margin: 0;
   min-height: 100vh;
   font-family: inherit;
-  color: #e2e8f0;
-  background-color: #020617;
+  color: var(--neutral-900);
+  background-color: #ffffff;
   background-image:
-    radial-gradient(circle at 20% 20%, rgba(59, 130, 246, 0.08), transparent 55%),
-    radial-gradient(circle at 80% 0%, rgba(236, 72, 153, 0.08), transparent 45%),
-    linear-gradient(180deg, rgba(2, 6, 23, 0.9) 0%, rgba(2, 6, 23, 1) 100%);
+    linear-gradient(180deg, rgba(255, 255, 255, 0.95) 0%, rgba(249, 250, 251, 1) 100%);
 }
 
 #root {
@@ -39,23 +54,133 @@ body {
 img {
   max-width: 100%;
   display: block;
+  border-radius: 0.5rem;
 }
 
 a {
-  color: inherit;
+  color: var(--primary);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+a:hover {
+  color: var(--primary-dark);
+}
+
+p {
+  margin: 0;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  margin: 0;
+  font-weight: 600;
+  line-height: 1.2;
+  color: var(--neutral-900);
+}
+
+h1 {
+  font-size: 2rem;
+}
+
+h2 {
+  font-size: 1.5rem;
+}
+
+h3 {
+  font-size: 1.25rem;
 }
 
 ::selection {
-  background-color: rgba(59, 130, 246, 0.4);
-  color: #f8fafc;
+  background-color: var(--primary);
+  color: white;
 }
 
+button {
+  transition: all 0.2s ease;
+  font-weight: 500;
+}
+
+button:active {
+  transform: scale(0.98);
+}
+
+input, textarea, select {
+  font-family: inherit;
+  font-size: 1rem;
+}
+
+input:focus, textarea:focus, select:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+/* Scrollbar Styling */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--neutral-100);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--neutral-300);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--neutral-400);
+}
+
+/* Utility: Read-friendly text */
+.prose {
+  max-width: 65ch;
+  line-height: 1.7;
+  font-size: 1rem;
+}
+
+/* Accessibility: Reduced motion */
 @media (prefers-reduced-motion: reduce) {
   * {
     animation-duration: 0.001ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.001ms !important;
     scroll-behavior: auto !important;
+  }
+}
+
+/* Smooth animations */
+@keyframes slideUp {
+  from {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideInFromLeft {
+  from {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
   }
 }
 
@@ -66,6 +191,7 @@ a {
 
 .react-modal-sheet-backdrop {
   z-index: 998 !important;
+  background-color: rgba(0, 0, 0, 0.4);
 }
 
 .react-modal-sheet__header {
@@ -78,21 +204,82 @@ a {
 .react-modal-sheet__drag-handle {
   width: 40px;
   height: 4px;
-  background-color: #d1d5db;
+  background-color: var(--neutral-300);
   border-radius: 2px;
   margin: 12px auto;
 }
 
-/* Smooth animations for drawer */
 .react-modal-sheet-content {
   animation: slideUp 300ms ease-out;
+  border-radius: 1rem 1rem 0 0;
+  background-color: white;
+  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.08);
 }
 
-@keyframes slideUp {
-  from {
-    transform: translateY(100%);
+/* Education-specific styles */
+.card {
+  background: white;
+  border-radius: 0.75rem;
+  border: 1px solid var(--neutral-200);
+  padding: 1.5rem;
+  transition: all 0.3s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.card:hover {
+  border-color: var(--primary);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.1);
+}
+
+.badge {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.badge-primary {
+  background-color: rgba(59, 130, 246, 0.1);
+  color: var(--primary-dark);
+}
+
+.badge-success {
+  background-color: rgba(16, 185, 129, 0.1);
+  color: #065f46;
+}
+
+.badge-warning {
+  background-color: rgba(245, 158, 11, 0.1);
+  color: #92400e;
+}
+
+/* Loading animation */
+.loading {
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+/* Page transitions */
+.page-enter {
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+/* Focus visible for accessibility */
+button:focus-visible,
+a:focus-visible,
+input:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
+/* Print styles */
+@media print {
+  body {
+    background-color: white;
+    background-image: none;
   }
-  to {
-    transform: translateY(0);
+
+  .no-print {
+    display: none;
   }
 }

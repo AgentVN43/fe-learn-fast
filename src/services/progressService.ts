@@ -124,4 +124,39 @@ export const progressService = {
       method: "DELETE",
     });
   },
+
+  // Get user progress (all study sets aggregated)
+  getUserProgress: async () => {
+    return apiCall<{ data: ProgressData[]; stats?: Record<string, any> }>(
+      `/progress/user-progress`,
+      { method: "GET" }
+    );
+  },
+
+  // Get progress stats by userId (deprecated, use getUserProgress)
+  getStatsByUserId: async (userId: string) => {
+    return apiCall<ProgressData[]>(`/progress/stats?userId=${userId}`, {
+      method: "GET",
+    });
+  },
+
+  // Submit reflex grade for a flashcard
+  submitReflexGrade: async (
+    flashcardId: string,
+    studySetId: string,
+    difficulty: "easy" | "hard",
+    reactionTime: number
+  ) => {
+    return apiCall<{ success: boolean; data: ProgressData }>(
+      `/progress/${flashcardId}/study-set/${studySetId}/reflex-grade`,
+      {
+        method: "POST",
+        body: JSON.stringify({
+          difficulty,
+          reactionTime,
+          isCorrect: difficulty === "easy",
+        }),
+      }
+    );
+  },
 };

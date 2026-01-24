@@ -44,6 +44,7 @@ export interface StudySet {
   description: string;
   userId: string;
   flashcardCount: number;
+  cardCount?: number; // alias for flashcardCount
   likes: number;
   isPublic: boolean;
   tags: string[];

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { HiArrowLeft, HiHeart, HiPlay, HiClipboardList } from "react-icons/hi";
+import { HiBolt } from "react-icons/hi2";
 import type { StudySet, Flashcard } from "../types";
 import type { ProgressStats } from "../services/progressService";
 
@@ -10,6 +11,7 @@ interface StudySetDetailProps {
   onBack: () => void;
   onLearnClick: () => void;
   onTestClick: () => void;
+  onReflexClick: () => void;
 }
 
 export const StudySetDetail = ({
@@ -19,6 +21,7 @@ export const StudySetDetail = ({
   onBack,
   onLearnClick,
   onTestClick,
+  onReflexClick,
 }: StudySetDetailProps) => {
   const [liked, setLiked] = useState(false);
   const [activeTab, setActiveTab] = useState<"overview" | "cards">("overview");
@@ -43,7 +46,9 @@ export const StudySetDetail = ({
             onClick={handleLike}
             className="flex items-center gap-2 px-3 py-2 rounded-lg transition"
           >
-            <HiHeart className={`w-5 h-5 ${liked ? "fill-red-500 text-red-500" : "text-gray-400"}`} />
+            <HiHeart
+              className={`w-5 h-5 ${liked ? "fill-red-500 text-red-500" : "text-gray-400"}`}
+            />
             <span className="text-sm">{studySet.likes + (liked ? 1 : 0)}</span>
           </button>
         </div>
@@ -64,7 +69,9 @@ export const StudySetDetail = ({
             <span>👤 {studySet.user?.name || "Anonymous"}</span>
             <span>📚 {studySet.flashcardCount} thẻ</span>
             <span>📊 {studySet.studyCount} lần học</span>
-            {studySet.isPublic && <span className="text-green-600">🔓 Công khai</span>}
+            {studySet.isPublic && (
+              <span className="text-green-600">🔓 Công khai</span>
+            )}
           </div>
 
           {/* Tags */}
@@ -86,22 +93,28 @@ export const StudySetDetail = ({
             <div className="grid grid-cols-4 gap-3 mt-6 pt-6 border-t border-gray-200">
               <div className="text-center">
                 <p className="text-sm text-gray-500">Đã Học</p>
-                <p className="text-lg font-bold text-green-600">{stats.totalReviewed}/{stats.total}</p>
+                <p className="text-lg font-bold text-green-600">
+                  {stats.totalReviewed}/{stats.total}
+                </p>
               </div>
               <div className="text-center">
                 <p className="text-sm text-gray-500">Thành Thạo</p>
-                <p className="text-lg font-bold text-blue-600">{stats.mastered}</p>
+                <p className="text-lg font-bold text-blue-600">
+                  {stats.mastered}
+                </p>
               </div>
               <div className="text-center">
                 <p className="text-sm text-gray-500">Cần Luyện</p>
-                <p className="text-lg font-bold text-yellow-600">{stats.needReview}</p>
+                <p className="text-lg font-bold text-yellow-600">
+                  {stats.needReview}
+                </p>
               </div>
               <div className="text-center">
                 <p className="text-sm text-gray-500">Độ Chính Xác</p>
                 <p className="text-lg font-bold text-purple-600">
-                  {typeof stats.accuracyRate === 'number'
+                  {typeof stats.accuracyRate === "number"
                     ? stats.accuracyRate.toFixed(0)
-                    : typeof stats.accuracyRate === 'string'
+                    : typeof stats.accuracyRate === "string"
                       ? parseInt(stats.accuracyRate, 10)
                       : 0}
                   %
@@ -113,23 +126,30 @@ export const StudySetDetail = ({
               Đang tải tiến trình học...
             </div>
           )}
-          </div>
+        </div>
 
         {/* Action Buttons */}
-        <div className="flex gap-3 mb-6">
+        <div className="grid grid-cols-3 gap-3 mb-6">
           <button
             onClick={onLearnClick}
-            className="flex-1 flex items-center justify-center gap-2 bg-blue-500 hover:bg-blue-600 text-white font-medium py-3 px-4 rounded-lg transition"
+            className="flex items-center justify-center gap-2 bg-blue-500 hover:bg-blue-600 text-white font-medium py-3 px-4 rounded-lg transition"
           >
             <HiPlay className="w-5 h-5" />
-            <span>Bắt Đầu Học</span>
+            <span className="hidden sm:inline">Học</span>
+          </button>
+          <button
+            onClick={onReflexClick}
+            className="flex items-center justify-center gap-2 bg-yellow-500 hover:bg-yellow-600 text-white font-medium py-3 px-4 rounded-lg transition"
+          >
+            <HiBolt className="w-5 h-5" />
+            <span className="hidden sm:inline">Phản Xạ</span>
           </button>
           <button
             onClick={onTestClick}
-            className="flex-1 flex items-center justify-center gap-2 bg-green-500 hover:bg-green-600 text-white font-medium py-3 px-4 rounded-lg transition"
+            className="flex items-center justify-center gap-2 bg-green-500 hover:bg-green-600 text-white font-medium py-3 px-4 rounded-lg transition"
           >
             <HiClipboardList className="w-5 h-5" />
-            <span>Bài Kiểm Tra</span>
+            <span className="hidden sm:inline">Kiểm Tra</span>
           </button>
         </div>
 
@@ -164,18 +184,24 @@ export const StudySetDetail = ({
               // Overview Tab
               <div className="space-y-4">
                 <div>
-                  <h3 className="font-semibold text-gray-700 mb-2">Về Bộ Học Tập</h3>
+                  <h3 className="font-semibold text-gray-700 mb-2">
+                    Về Bộ Học Tập
+                  </h3>
                   <p className="text-gray-600">
                     {studySet.description || "Không có mô tả"}
                   </p>
                 </div>
 
                 <div>
-                  <h3 className="font-semibold text-gray-700 mb-2">Thông Tin</h3>
+                  <h3 className="font-semibold text-gray-700 mb-2">
+                    Thông Tin
+                  </h3>
                   <div className="grid grid-cols-2 gap-4 text-sm">
                     <div>
                       <p className="text-gray-500">Tổng Thẻ</p>
-                      <p className="text-lg font-bold">{studySet.flashcardCount}</p>
+                      <p className="text-lg font-bold">
+                        {studySet.flashcardCount}
+                      </p>
                     </div>
                     <div>
                       <p className="text-gray-500">Lần Học</p>
@@ -191,7 +217,7 @@ export const StudySetDetail = ({
                       <p className="text-gray-500">Tạo</p>
                       <p className="text-lg font-bold">
                         {new Date(studySet.createdAt || "").toLocaleDateString(
-                          "vi-VN"
+                          "vi-VN",
                         )}
                       </p>
                     </div>
@@ -200,7 +226,9 @@ export const StudySetDetail = ({
 
                 {studySet.user && (
                   <div>
-                    <h3 className="font-semibold text-gray-700 mb-2">Tác Giả</h3>
+                    <h3 className="font-semibold text-gray-700 mb-2">
+                      Tác Giả
+                    </h3>
                     <div className="flex items-center gap-3 p-4 bg-gray-50 rounded-lg">
                       <div className="w-12 h-12 bg-blue-400 rounded-full flex items-center justify-center text-white font-bold">
                         {studySet.user.name.charAt(0).toUpperCase()}
