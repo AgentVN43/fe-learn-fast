@@ -125,10 +125,10 @@ export const progressService = {
     });
   },
 
-  // Get user progress (all study sets aggregated)
-  getUserProgress: async (userId: string) => {
+  // Get user progress (all study sets aggregated, uses auth token)
+  getUserProgress: async () => {
     return apiCall<{ data: ProgressData[]; stats?: Record<string, any> }>(
-      `/progress/user-progress/${userId}`,
+      `/progress/user-progress`,
       { method: "GET" }
     );
   },
@@ -160,10 +160,10 @@ export const progressService = {
     );
   },
 
-  // Get quick review pool - thẻ cần ôn tập ngay
-  getQuickReviewPool: async (userId: string) => {
+  // Get quick review pool - thẻ cần ôn tập ngay (uses auth token)
+  getQuickReviewPool: async () => {
     return apiCall<{ success: boolean; data: any[] }>(
-      `/progress/quick-review-pool/${userId}`,
+      `/progress/quick-review-pool`,
       { method: "GET" }
     );
   },

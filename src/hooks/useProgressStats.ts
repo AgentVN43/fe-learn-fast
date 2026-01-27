@@ -4,11 +4,11 @@ import {
   type ProgressData,
 } from "../services/progressService";
 
-export const useProgressStats = (userId?: string) => {
+export const useProgressStats = () => {
   return useQuery<ProgressData[]>({
-    queryKey: ["userProgress", userId],
+    queryKey: ["userProgress"],
     queryFn: async () => {
-      const response = await progressService.getUserProgress(userId);
+      const response = await progressService.getUserProgress();
       return Array.isArray(response.data) ? response.data : [];
     },
   });
