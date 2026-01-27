@@ -28,7 +28,7 @@ export default function ProfilePage() {
     data: progressStats,
     isLoading: statsLoading,
     error: statsError,
-  } = useProgressStats();
+  } = useProgressStats(user?.id);
 
   // Calculate user stats
   const calculateStats = (): UserStats => {

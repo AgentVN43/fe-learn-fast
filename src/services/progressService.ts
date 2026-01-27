@@ -126,9 +126,9 @@ export const progressService = {
   },
 
   // Get user progress (all study sets aggregated)
-  getUserProgress: async () => {
+  getUserProgress: async (userId: string) => {
     return apiCall<{ data: ProgressData[]; stats?: Record<string, any> }>(
-      `/progress/user-progress`,
+      `/progress/user-progress/${userId}`,
       { method: "GET" }
     );
   },
@@ -157,6 +157,14 @@ export const progressService = {
           isCorrect: difficulty === "easy",
         }),
       }
+    );
+  },
+
+  // Get quick review pool - thẻ cần ôn tập ngay
+  getQuickReviewPool: async (userId: string) => {
+    return apiCall<{ success: boolean; data: any[] }>(
+      `/progress/quick-review-pool/${userId}`,
+      { method: "GET" }
     );
   },
 };

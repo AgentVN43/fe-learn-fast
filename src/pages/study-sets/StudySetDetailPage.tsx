@@ -20,9 +20,10 @@ import { FlashcardLearner } from "../../components/FlashcardLearner";
 import { TestMode } from "../../components/TestMode";
 import { ReflexMode } from "../../components/ReflexMode";
 import { LoginModal } from "../../components/LoginModal";
-import type { StudySet } from "../../types";
+import { useQuickReviewPool } from "../../hooks/useQuickReviewPool";
+import type { StudySet, Flashcard } from "../../types";
 
-type ViewMode = "detail" | "learn" | "test" | "reflex";
+type ViewMode = "detail" | "learn" | "review" | "test" | "reflex";
 
 export default function StudySetDetailPage() {
     console.log("=== StudySetDetailPage RENDER ===");
@@ -46,6 +47,13 @@ export default function StudySetDetailPage() {
         isLoading: statsLoading,
         error: statsError,
     } = useProgressStats(studySetId);
+
+    // Fetch quick review pool when entering review mode
+    const {
+        data: quickReviewCards = [],
+        isLoading: reviewLoading,
+        error: reviewError,
+    } = useQuickReviewPool(viewMode === "review");
 
     // Reset viewMode when studySetId changes to ensure clean state
     useEffect(() => {
@@ -361,6 +369,74 @@ export default function StudySetDetailPage() {
         );
     }
 
+    if (viewMode === "review") {
+        // Review loading state
+        if (reviewLoading) {
+            return (
+                <div className="min-h-screen flex items-center justify-center bg-gray-100">
+                    <div className="text-center">
+                        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
+                        <p className="text-gray-600">Đang tải thẻ cần ôn tập...</p>
+                    </div>
+                </div>
+            );
+        }
+
+        // Review error state
+        if (reviewError) {
+            return (
+                <div className="min-h-screen flex items-center justify-center bg-gray-100">
+                    <div className="bg-white rounded-lg shadow-md p-6 max-w-md text-center">
+                        <p className="text-red-600 font-medium mb-4">
+                            {(reviewError as Error).message}
+                        </p>
+                        <button
+                            onClick={handleBackToDetail}
+                            className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition"
+                        >
+                            Quay Lại
+                        </button>
+                    </div>
+                </div>
+            );
+        }
+
+        // No cards to review
+        if (!quickReviewCards || quickReviewCards.length === 0) {
+            return (
+                <div className="min-h-screen flex items-center justify-center bg-gray-100">
+                    <div className="bg-white rounded-lg shadow-md p-6 max-w-md text-center">
+                        <p className="text-gray-600 mb-4">✅ Không có thẻ cần ôn tập lúc này</p>
+                        <button
+                            onClick={handleBackToDetail}
+                            className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition"
+                        >
+                            Quay Lại
+                        </button>
+                    </div>
+                </div>
+            );
+        }
+
+        // Convert ProgressData to Flashcard for FlashcardLearner
+        const reviewFlashcards: Flashcard[] = (quickReviewCards as any[]).map((progress) => ({
+            id: progress.flashcardId?.id || progress.flashcardId?._id,
+            _id: progress.flashcardId?._id || progress.flashcardId?.id,
+            term: progress.flashcardId?.term || "",
+            definition: progress.flashcardId?.definition || "",
+            image: progress.flashcardId?.image,
+        }));
+
+        return (
+            <FlashcardLearner
+                flashcards={reviewFlashcards}
+                title={`${studySet.title} - Ôn Tập`}
+                onBack={handleBackToDetail}
+                studySetId={studySetId}
+            />
+        );
+    }
+
     if (viewMode === "reflex") {
         return (
             <ReflexMode
@@ -396,6 +472,7 @@ export default function StudySetDetailPage() {
                 stats={statsData?.stats}
                 onBack={() => window.history.back()}
                 onLearnClick={handleLearnClick}
+                onReviewClick={() => setViewMode("review")}
                 onTestClick={handleTestClick}
                 onReflexClick={() => setViewMode("reflex")}
             />

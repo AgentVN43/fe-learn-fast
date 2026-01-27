@@ -10,6 +10,7 @@ interface StudySetDetailProps {
   stats?: ProgressStats;
   onBack: () => void;
   onLearnClick: () => void;
+  onReviewClick: () => void;
   onTestClick: () => void;
   onReflexClick: () => void;
 }
@@ -20,6 +21,7 @@ export const StudySetDetail = ({
   stats,
   onBack,
   onLearnClick,
+  onReviewClick,
   onTestClick,
   onReflexClick,
 }: StudySetDetailProps) => {
@@ -29,6 +31,8 @@ export const StudySetDetail = ({
   const handleLike = () => {
     setLiked(!liked);
   };
+
+  console.log("Study Sets:", studySet);
 
   return (
     <div className="min-h-screen bg-gray-100">
@@ -135,7 +139,23 @@ export const StudySetDetail = ({
             className="flex items-center justify-center gap-2 bg-blue-500 hover:bg-blue-600 text-white font-medium py-3 px-4 rounded-lg transition"
           >
             <HiPlay className="w-5 h-5" />
-            <span className="hidden sm:inline">Học</span>
+            <span className="hidden sm:inline">Học </span>
+          </button>
+
+          <button
+            onClick={onTestClick}
+            className="flex items-center justify-center gap-2 bg-green-500 hover:bg-green-600 text-white font-medium py-3 px-4 rounded-lg transition"
+          >
+            <HiClipboardList className="w-5 h-5" />
+            <span className="hidden sm:inline">Kiểm Tra</span>
+          </button>
+
+          <button
+            onClick={onReviewClick}
+            className="flex items-center justify-center gap-2 bg-blue-500 hover:bg-blue-600 text-white font-medium py-3 px-4 rounded-lg transition"
+          >
+            <HiPlay className="w-5 h-5" />
+            <span className="hidden sm:inline">Ôn tập</span>
           </button>
           <button
             onClick={onReflexClick}
@@ -143,13 +163,6 @@ export const StudySetDetail = ({
           >
             <HiBolt className="w-5 h-5" />
             <span className="hidden sm:inline">Phản Xạ</span>
-          </button>
-          <button
-            onClick={onTestClick}
-            className="flex items-center justify-center gap-2 bg-green-500 hover:bg-green-600 text-white font-medium py-3 px-4 rounded-lg transition"
-          >
-            <HiClipboardList className="w-5 h-5" />
-            <span className="hidden sm:inline">Kiểm Tra</span>
           </button>
         </div>
 

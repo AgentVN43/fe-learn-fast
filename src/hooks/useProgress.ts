@@ -5,11 +5,14 @@ export const useInitProgress = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (studySetId: string) => progressService.initProgress(studySetId),
+    mutationFn: (studySetId: string) =>
+      progressService.initProgress(studySetId),
     onSuccess: (_, studySetId) => {
       // Invalidate progress queries after init
       queryClient.invalidateQueries({ queryKey: ["progress", studySetId] });
-      queryClient.invalidateQueries({ queryKey: ["progressStats", studySetId] });
+      queryClient.invalidateQueries({
+        queryKey: ["progressStats", studySetId],
+      });
     },
   });
 };
@@ -58,6 +61,30 @@ export const useMastered = (studySetId: string | undefined) => {
   });
 };
 
+// export const useReviewFlashcard = () => {
+//   const queryClient = useQueryClient();
+
+//   return useMutation({
+//     mutationFn: ({
+//       flashcardId,
+//       studySetId,
+//       isCorrect,
+//       difficulty,
+//     }: {
+//       flashcardId: string;
+//       studySetId: string;
+//       isCorrect: boolean;
+//       difficulty: "easy" | "medium" | "hard";
+//     }) =>
+//       progressService.submitReview(flashcardId, studySetId, isCorrect, difficulty),
+//     onSuccess: (_, { studySetId }) => {
+//       // Invalidate related queries
+//       queryClient.invalidateQueries({ queryKey: ["progress", studySetId] });
+//       queryClient.invalidateQueries({ queryKey: ["progressStats", studySetId] });
+//     },
+//   });
+// };
+
 export const useReviewFlashcard = () => {
   const queryClient = useQueryClient();
 
@@ -73,11 +100,24 @@ export const useReviewFlashcard = () => {
       isCorrect: boolean;
       difficulty: "easy" | "medium" | "hard";
     }) =>
-      progressService.submitReview(flashcardId, studySetId, isCorrect, difficulty),
+      progressService.submitReview(
+        flashcardId,
+        studySetId,
+        isCorrect,
+        difficulty,
+      ),
     onSuccess: (_, { studySetId }) => {
-      // Invalidate related queries
+      // Invalidate tiến độ của bộ học cụ thể
       queryClient.invalidateQueries({ queryKey: ["progress", studySetId] });
-      queryClient.invalidateQueries({ queryKey: ["progressStats", studySetId] });
+      queryClient.invalidateQueries({
+        queryKey: ["progressStats", studySetId],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["progressNeedReview", studySetId],
+      });
+
+      // QUAN TRỌNG: Invalidate pool ôn tập tổng hợp vì thẻ này vừa được cập nhật nextReviewAt
+      queryClient.invalidateQueries({ queryKey: ["quickReviewPool"] });
     },
   });
 };
@@ -97,7 +137,9 @@ export const useUpdateDifficulty = () => {
     }) => progressService.updateDifficulty(flashcardId, studySetId, difficulty),
     onSuccess: (_, { studySetId }) => {
       queryClient.invalidateQueries({ queryKey: ["progress", studySetId] });
-      queryClient.invalidateQueries({ queryKey: ["progressStats", studySetId] });
+      queryClient.invalidateQueries({
+        queryKey: ["progressStats", studySetId],
+      });
     },
   });
 };
@@ -115,7 +157,9 @@ export const useMasterFlashcard = () => {
     }) => progressService.markAsMastered(flashcardId, studySetId),
     onSuccess: (_, { studySetId }) => {
       queryClient.invalidateQueries({ queryKey: ["progress", studySetId] });
-      queryClient.invalidateQueries({ queryKey: ["progressStats", studySetId] });
+      queryClient.invalidateQueries({
+        queryKey: ["progressStats", studySetId],
+      });
     },
   });
 };
@@ -124,10 +168,13 @@ export const useResetProgress = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (studySetId: string) => progressService.resetProgress(studySetId),
+    mutationFn: (studySetId: string) =>
+      progressService.resetProgress(studySetId),
     onSuccess: (_, studySetId) => {
       queryClient.invalidateQueries({ queryKey: ["progress", studySetId] });
-      queryClient.invalidateQueries({ queryKey: ["progressStats", studySetId] });
+      queryClient.invalidateQueries({
+        queryKey: ["progressStats", studySetId],
+      });
     },
   });
 };
