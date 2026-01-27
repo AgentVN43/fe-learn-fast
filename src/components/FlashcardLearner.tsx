@@ -183,19 +183,6 @@ export const FlashcardLearner = ({
     setCards(newCards);
   };
 
-  const getAvailableVoices = async () => {
-    return new Promise((resolve) => {
-      const voices = window.speechSynthesis.getVoices();
-      if (voices.length > 0) {
-        resolve(voices);
-      } else {
-        window.speechSynthesis.onvoiceschanged = () => {
-          resolve(window.speechSynthesis.getVoices());
-        };
-      }
-    });
-  };
-
   // const handleSpeak = (text: string) => {
   //   if ("speechSynthesis" in window) {
   //     window.speechSynthesis.cancel();
@@ -268,7 +255,7 @@ export const FlashcardLearner = ({
     }
 
     // Lấy ID thẻ hiện tại
-    const cardId = currentCard.id;
+    const cardId = currentCard.id || "";
     console.log(
       `🔄 Gửi review thẻ ${cardId} - ${difficulty} (${isCorrect ? "đúng" : "sai"})`,
     );
@@ -282,7 +269,7 @@ export const FlashcardLearner = ({
         try {
           await masterMutation.mutateAsync({
             flashcardId: cardId,
-            studySetId,
+            studySetId: studySetId,
           });
           console.log("✅ Thẻ được đánh dấu là đã thành thạo");
         } catch (error) {

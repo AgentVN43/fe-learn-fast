@@ -13,7 +13,6 @@ interface ReflexModeProps {
 export const ReflexMode = ({
   flashcards,
   title,
-  studySetId,
   onBack,
 }: ReflexModeProps) => {
   const [currentIndex, setCurrentIndex] = useState(0);

@@ -167,14 +167,14 @@ export default function StudySetDetailPage() {
 
     // Log mutation state (MUST be before any conditional returns)
     useEffect(() => {
-        if (initProgressMutation.isLoading) {
+        if (initProgressMutation.isPending) {
             console.log("⏳ Init progress loading...");
         }
         if (initProgressMutation.isError) {
             console.error("❌ Init progress error:", initProgressMutation.error);
         }
     }, [
-        initProgressMutation.isLoading,
+        initProgressMutation.isPending,
         initProgressMutation.isError,
         initProgressMutation.error,
     ]);

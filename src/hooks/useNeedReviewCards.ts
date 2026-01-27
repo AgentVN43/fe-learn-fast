@@ -49,7 +49,7 @@ export const useNeedReviewCards = (
 
     // Lọc thẻ cần học
     const needReviewCards = allCards.filter((card) => {
-      const cardId = card.id || card._id;
+      const cardId = card.id || card._id || "";
       const progress = progressMap.get(cardId);
 
       // Nếu không có progress → chưa học, cần ưu tiên

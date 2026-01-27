@@ -176,23 +176,30 @@ import { useEffect, useState } from "react";
 // };
 // export default ReflexCard;
 
-const ReflexCard = ({ card, onGrade }) => {
+interface ReflexCardProps {
+  card: any;
+  onGrade: (difficulty: "easy" | "hard") => void;
+}
+
+const ReflexCard = ({ card, onGrade }: ReflexCardProps) => {
   const [isRevealed, setIsRevealed] = useState(false);
   const [timeLeft, setTimeLeft] = useState(3); // 3 giây phản xạ
 
   // Logic đếm ngược
   useEffect(() => {
-    let timer;
+    let timer: ReturnType<typeof setInterval> | undefined;
     if (!isRevealed && timeLeft > 0) {
       timer = setInterval(() => setTimeLeft((prev) => prev - 1), 1000);
     } else if (timeLeft === 0) {
       setIsRevealed(true);
     }
-    return () => clearInterval(timer);
+    return () => {
+      if (timer) clearInterval(timer);
+    };
   }, [timeLeft, isRevealed]);
 
   // Hàm highlight các placeholder [[...]]
-  const formatTemplate = (text) => {
+  const formatTemplate = (text: string) => {
     const parts = text.split(/(\[\[.*?\]\])/g);
     return parts.map((part, i) =>
       part.startsWith("[[") ? (

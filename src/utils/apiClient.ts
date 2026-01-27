@@ -1,4 +1,21 @@
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000/api";
+// Lấy API URL từ runtime, cho phép thay đổi mà không cần rebuild
+const getApiBaseUrl = (): string => {
+  // 1. Nếu có env variable từ build
+  if (import.meta.env.VITE_API_BASE_URL) {
+    return import.meta.env.VITE_API_BASE_URL;
+  }
+  
+  // 2. Nếu server cùng domain, dùng /api relative path
+  if (typeof window !== "undefined") {
+    // Relative API path (same domain, same protocol)
+    return "/api";
+  }
+  
+  // 3. Fallback
+  return "http://localhost:5000/api";
+};
+
+const API_BASE_URL = getApiBaseUrl();
 const AUTH_TOKEN_KEY = "auth_token";
 
 async function apiCall<T>(

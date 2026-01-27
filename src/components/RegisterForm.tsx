@@ -7,14 +7,14 @@ export const RegisterForm = () => {
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
   const [role, setRole] = useState<"Admin" | "Assistant">("Assistant");
-  const { registerAsync, registerLoading, registerError } = useAuth();
+  const { registerAsync, registerError } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
       await registerAsync({ email, password, name, role });
-      navigate({ to: "/", replace: true });
+      navigate("/", { replace: true });
     } catch (error) {
       // Error already handled by hook
     }
@@ -44,7 +44,6 @@ export const RegisterForm = () => {
               onChange={(e) => setEmail(e.target.value)}
               placeholder="you@example.com"
               required
-              disabled={registerLoading}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
@@ -59,7 +58,6 @@ export const RegisterForm = () => {
               onChange={(e) => setName(e.target.value)}
               placeholder="Nguyễn Văn A"
               required
-              disabled={registerLoading}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
@@ -74,7 +72,6 @@ export const RegisterForm = () => {
               onChange={(e) => setPassword(e.target.value)}
               placeholder="••••••••"
               required
-              disabled={registerLoading}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
@@ -86,7 +83,6 @@ export const RegisterForm = () => {
             <select
               value={role}
               onChange={(e) => setRole(e.target.value as "Admin" | "Assistant")}
-              disabled={registerLoading}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               <option value="Assistant">Trợ Lý</option>
@@ -96,10 +92,9 @@ export const RegisterForm = () => {
 
           <button
             type="submit"
-            disabled={registerLoading}
             className="w-full bg-blue-500 hover:bg-blue-600 disabled:bg-gray-400 text-white font-medium py-2 px-4 rounded-lg transition duration-200"
           >
-            {registerLoading ? "Đang đăng ký..." : "Đăng Ký"}
+            Đăng Ký
           </button>
         </form>
 

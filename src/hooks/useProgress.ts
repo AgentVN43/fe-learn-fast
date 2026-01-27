@@ -1,5 +1,5 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { progressService, type ProgressStats } from "../services/progressService";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { progressService } from "../services/progressService";
 
 export const useInitProgress = () => {
   const queryClient = useQueryClient();

@@ -49,8 +49,8 @@ export default function ProfilePage() {
       0,
     );
 
-    const masteredCards = stats.filter((s) => s.status === "mastered").length;
-    const learningCards = stats.filter((s) => s.status === "learning").length;
+    const masteredCards = stats.filter((s) => s.isMastered).length;
+    const learningCards = stats.filter((s) => !s.isMastered).length;
 
     return {
       totalStudySets: userStudySets.length,

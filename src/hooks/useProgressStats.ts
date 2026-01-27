@@ -1,13 +1,8 @@
 import { useQuery } from "@tanstack/react-query";
-import { progressService } from "../services/progressService";
-
-interface ProgressStat {
-  status: "mastered" | "learning" | "reviewing";
-  [key: string]: any;
-}
+import { progressService, type ProgressData } from "../services/progressService";
 
 export const useProgressStats = () => {
-  return useQuery<ProgressStat[]>({
+  return useQuery<ProgressData[]>({
     queryKey: ["userProgress"],
     queryFn: async () => {
       const response = await progressService.getUserProgress();

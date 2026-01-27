@@ -1,6 +1,17 @@
 import type { Actress, Movie } from "../types";
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000/api";
+// Lấy API URL từ runtime
+const getApiBaseUrl = (): string => {
+  if (import.meta.env.VITE_API_BASE_URL) {
+    return import.meta.env.VITE_API_BASE_URL;
+  }
+  if (typeof window !== "undefined") {
+    return "/api"; // Relative path - same domain
+  }
+  return "http://localhost:5000/api";
+};
+
+const API_BASE_URL = getApiBaseUrl();
 
 // Helper: xử lý lỗi và parse JSON
 async function api<T>(endpoint: string, config: RequestInit = {}): Promise<T> {

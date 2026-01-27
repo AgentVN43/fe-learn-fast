@@ -2,12 +2,12 @@ import { useAuth } from "../hooks/useAuth";
 import { useNavigate } from "react-router-dom";
 
 export const UserProfile = () => {
-  const { user, logout, logoutLoading } = useAuth();
+  const { user, logout } = useAuth();
   const navigate = useNavigate();
 
   const handleLogout = async () => {
     logout();
-    navigate({ to: "/login", replace: true });
+    navigate("/login", { replace: true });
   };
 
   if (!user) {
@@ -57,10 +57,9 @@ export const UserProfile = () => {
 
           <button
             onClick={handleLogout}
-            disabled={logoutLoading}
             className="flex-1 bg-red-500 hover:bg-red-600 disabled:bg-gray-400 text-white font-medium py-2 px-4 rounded-lg transition duration-200"
           >
-            {logoutLoading ? "Đang đăng xuất..." : "Đăng Xuất"}
+            Đăng Xuất
           </button>
         </div>
       </div>
