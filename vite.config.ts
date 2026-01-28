@@ -18,6 +18,9 @@ export default defineConfig({
       manifest: {
         name: "Zone69",
         short_name: "Zone69",
+        start_url: "/",
+        display: "standalone",
+        background_color: "#ffffff",
         theme_color: "#ffffff",
         icons: [
           {
