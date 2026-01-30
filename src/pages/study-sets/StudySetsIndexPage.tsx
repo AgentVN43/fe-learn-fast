@@ -2,7 +2,6 @@ import { useState } from "react";
 import { StudySetList } from "../../components/StudySetList";
 import { StudySetForm } from "../../components/StudySetForm";
 import type { StudySet, StudySetFormData } from "../../types";
-import { HiPlus } from "react-icons/hi";
 
 export default function StudySetsIndexPage() {
   const [isFormOpen, setIsFormOpen] = useState(false);
@@ -32,13 +31,6 @@ export default function StudySetsIndexPage() {
         {/* Header */}
         <div className="flex justify-between items-center mb-8">
           <h1 className="text-4xl font-bold text-gray-800">Bộ Học Tập</h1>
-          <button
-            onClick={() => setIsFormOpen(true)}
-            className="flex items-center gap-2 bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-lg transition"
-          >
-            <HiPlus className="w-5 h-5" />
-            <span>Tạo Mới</span>
-          </button>
         </div>
 
         {/* Tabs */}

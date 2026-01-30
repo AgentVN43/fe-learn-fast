@@ -1,9 +1,12 @@
 import { createBrowserRouter, Navigate } from "react-router-dom";
 
+// Layout
+import MainLayout from "./components/MainLayout";
+
 // Components
 import { ProtectedRoute } from "./components/ProtectedRoute";
 
-// Page Components
+// Pages
 import HomePage from "./pages/HomePage";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
@@ -23,98 +26,72 @@ import AdminStudySetDetailPage from "./pages/admin/AdminStudySetDetailPage";
 import AdminFlashcardsPage from "./pages/admin/AdminFlashcardsPage";
 
 export const router = createBrowserRouter([
-    {
+  // 🌍 Public (no layout)
+  {
+    path: "/login",
+    element: <LoginPage />,
+  },
+  {
+    path: "/register",
+    element: <RegisterPage />,
+  },
+
+  // 🌍 App layout
+  {
+    element: <MainLayout />,
+    children: [
+      {
         path: "/",
         element: <HomePage />,
-    },
-    {
-        path: "/login",
-        element: <LoginPage />,
-    },
-    {
-        path: "/register",
-        element: <RegisterPage />,
-    },
-    {
-        path: "/profile",
-        element: (
-            <ProtectedRoute>
-                <ProfilePage />
-            </ProtectedRoute>
-        ),
-    },
-    {
-        path: "/my-study-sets",
-        element: (
-            <ProtectedRoute>
-                <MyStudySetsPage />
-            </ProtectedRoute>
-        ),
-    },
-    {
-        path: "/debug",
-        element: <DebugPage />,
-    },
-
-    // Study Sets Routes
-    {
+      },
+      {
         path: "/study-sets",
         element: <StudySetsIndexPage />,
-    },
-    {
-      path: "/study-sets/:studySetId",
-      element: (
-        <ProtectedRoute>
-          <StudySetDetailPage />
-        </ProtectedRoute>
-      ),
-    },
+      },
+      {
+        path: "/debug",
+        element: <DebugPage />,
+      },
 
-    // Admin Routes
-    {
-      path: "/admin",
-      element: (
-        <ProtectedRoute requiredRole="Admin">
-          <AdminDashboard />
-        </ProtectedRoute>
-      ),
-    },
-    {
-      path: "/admin/users",
-      element: (
-        <ProtectedRoute requiredRole="Admin">
-          <AdminUsersPage />
-        </ProtectedRoute>
-      ),
-    },
-    {
-      path: "/admin/study-sets",
-      element: (
-        <ProtectedRoute requiredRole="Admin">
-          <AdminStudySetsPage />
-        </ProtectedRoute>
-      ),
-    },
-    {
-      path: "/admin/study-sets/:studySetId",
-      element: (
-        <ProtectedRoute requiredRole="Admin">
-          <AdminStudySetDetailPage />
-        </ProtectedRoute>
-      ),
-    },
-    {
-      path: "/admin/flashcards",
-      element: (
-        <ProtectedRoute requiredRole="Admin">
-          <AdminFlashcardsPage />
-        </ProtectedRoute>
-      ),
-    },
+      // 🔒 Logged-in users
+      {
+        element: <ProtectedRoute />,
+        children: [
+          {
+            path: "/profile",
+            element: <ProfilePage />,
+          },
+          {
+            path: "/my-study-sets",
+            element: <MyStudySetsPage />,
+          },
+          {
+            path: "/study-sets/:studySetId",
+            element: <StudySetDetailPage />,
+          },
+        ],
+      },
 
-    // Fallback
-    {
-        path: "*",
-        element: <Navigate to="/" replace />,
-    },
+      // 🔒 Admin only
+      {
+        element: <ProtectedRoute requiredRole="Admin" />,
+        children: [
+          { path: "/admin", element: <AdminDashboard /> },
+          { path: "/admin/users", element: <AdminUsersPage /> },
+          { path: "/admin/study-sets", element: <AdminStudySetsPage /> },
+          {
+            path: "/admin/study-sets/:studySetId",
+            element: <AdminStudySetDetailPage />,
+          },
+          { path: "/admin/flashcards", element: <AdminFlashcardsPage /> },
+        ],
+      },
+    ],
+  },
+
+  // ❌ Fallback
+  {
+    path: "*",
+    element: <Navigate to="/" replace />,
+  },
 ]);

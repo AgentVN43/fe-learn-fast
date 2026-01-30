@@ -1,19 +1,9 @@
-import { type ReactNode } from "react";
+import { Navigate, Outlet } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
-import { useNavigate } from "react-router-dom";
 import type { UserRole } from "../types";
 
-interface ProtectedRouteProps {
-  children: ReactNode;
-  requiredRole?: UserRole;
-}
-
-export const ProtectedRoute = ({
-  children,
-  requiredRole,
-}: ProtectedRouteProps) => {
+export function ProtectedRoute({ requiredRole }: { requiredRole?: UserRole }) {
   const { user, isLoading } = useAuth();
-  const navigate = useNavigate();
 
   if (isLoading) {
     return (
@@ -24,14 +14,12 @@ export const ProtectedRoute = ({
   }
 
   if (!user) {
-    navigate("/login", { replace: true });
-    return null;
+    return <Navigate to="/login" replace />;
   }
 
   if (requiredRole && user.role !== requiredRole) {
-    navigate("/", { replace: true });
-    return null;
+    return <Navigate to="/" replace />;
   }
 
-  return <>{children}</>;
-};
+  return <Outlet />;
+}
