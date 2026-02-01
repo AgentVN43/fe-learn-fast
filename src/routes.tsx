@@ -1,10 +1,9 @@
 import { createBrowserRouter, Navigate } from "react-router-dom";
 
 // Layout
-import MainLayout from "./components/MainLayout";
+import MainLayout from "./layout/MainLayout";
 
 // Components
-import { ProtectedRoute } from "./components/ProtectedRoute";
 
 // Pages
 import HomePage from "./pages/HomePage";
@@ -15,8 +14,8 @@ import MyStudySetsPage from "./pages/MyStudySetsPage";
 import DebugPage from "./pages/DebugPage";
 
 // Study Sets
-import StudySetsIndexPage from "./pages/study-sets/StudySetsIndexPage";
-import StudySetDetailPage from "./pages/study-sets/StudySetDetailPage";
+import StudySetsIndexPage from "./components/study-sets/StudySetsIndexPage";
+import StudySetDetailPage from "./components/study-sets/StudySetDetailPage";
 
 // Admin
 import AdminDashboard from "./pages/admin/AdminDashboard";
@@ -24,7 +23,7 @@ import AdminUsersPage from "./pages/admin/AdminUsersPage";
 import AdminStudySetsPage from "./pages/admin/AdminStudySetsPage";
 import AdminStudySetDetailPage from "./pages/admin/AdminStudySetDetailPage";
 import AdminFlashcardsPage from "./pages/admin/AdminFlashcardsPage";
-
+import { ProtectedRoute } from "./components/routing/ProtectedRoute";
 export const router = createBrowserRouter([
   // 🌍 Public (no layout)
   {

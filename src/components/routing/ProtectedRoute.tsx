@@ -1,6 +1,6 @@
+import { useAuth } from "@/hooks/useAuth";
+import type { UserRole } from "@/types";
 import { Navigate, Outlet } from "react-router-dom";
-import { useAuth } from "../hooks/useAuth";
-import type { UserRole } from "../types";
 
 export function ProtectedRoute({ requiredRole }: { requiredRole?: UserRole }) {
   const { user, isLoading } = useAuth();

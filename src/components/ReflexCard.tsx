@@ -394,13 +394,13 @@ const ReflexCard = ({ card, onGrade }: ReflexCardProps) => {
             <div className="flex gap-4 justify-center">
               <button
                 onClick={() => onGrade("hard")}
-                className="px-8 py-3 bg-red-100 text-red-600 rounded-xl hover:bg-red-200 transition font-bold"
+                className="px-8 py-3 bg-red-100 text-red-600 rounded-xl hover:bg-red-200 transition font-bold cursor-pointer"
               >
                 Quên / Chậm
               </button>
               <button
                 onClick={() => onGrade("easy")}
-                className="px-8 py-3 bg-green-600 text-white rounded-xl hover:bg-green-700 transition shadow-lg font-bold"
+                className="px-8 py-3 bg-green-600 text-white rounded-xl hover:bg-green-700 transition shadow-lg font-bold cursor-pointer"
               >
                 Phản xạ tốt
               </button>
