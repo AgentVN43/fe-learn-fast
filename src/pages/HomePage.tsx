@@ -4,6 +4,7 @@ import { useUserStudySets } from "../hooks/useUserStudySets";
 import { Link, useNavigate } from "react-router-dom";
 import StudySetsIndexPage from "../components/study-sets/StudySetsIndexPage";
 import { Button } from "antd";
+import { HiUser } from "react-icons/hi";
 
 interface UserStats {
   totalStudySets: number;
@@ -18,16 +19,12 @@ export default function HomePage() {
   const navigate = useNavigate();
 
   // Fetch user's study sets (always call hooks, even if user is null)
-  const {
-    data: userStudySets = [],
-    isLoading: setsLoading,
-  } = useUserStudySets(user?.id);
+  const { data: userStudySets = [], isLoading: setsLoading } = useUserStudySets(
+    user?.id,
+  );
 
   // Fetch progress stats for user (always call hooks, even if user is null)
-  const {
-    data: progressStats,
-    isLoading: statsLoading,
-  } = useProgressStats();
+  const { data: progressStats, isLoading: statsLoading } = useProgressStats();
 
   // If not logged in, show public study sets
   if (!user) {
@@ -119,69 +116,6 @@ export default function HomePage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Top Navigation */}
-      <div className="bg-white shadow-sm sticky top-0 z-40">
-        <div className="max-w-6xl mx-auto px-4 py-4 flex justify-between items-center">
-          <h1 className="text-2xl font-bold text-blue-600">Learn Fast</h1>
-          
-          <div className="flex items-center gap-4">
-            {/* Stats Button */}
-            <button
-              onClick={() => navigate("/profile")}
-              className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-100 transition"
-              title="Xem thống kê"
-            >
-              <HiEye className="w-5 h-5 text-gray-600" />
-              <span className="text-sm text-gray-600">Xem Thống Kê</span>
-            </button>
-
-            {/* Profile Menu */}
-            <div className="relative group">
-              <button
-                className="flex items-center gap-2 px-4 py-2 rounded-lg hover:bg-gray-100 transition"
-                title={user?.email}
-              >
-                <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-500 rounded-full flex items-center justify-center text-white font-bold">
-                  {(user?.name?.[0] || user?.email?.[0] || "U").toUpperCase()}
-                </div>
-                <span className="text-sm font-medium text-gray-900 hidden sm:inline">
-                  {user?.name || user?.email?.split("@")[0]}
-                </span>
-              </button>
-
-              {/* Dropdown Menu */}
-              <div className="absolute right-0 mt-1 w-48 bg-white rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
-                <div className="p-2 space-y-1">
-                  <div className="px-4 py-2 border-b">
-                    <p className="text-xs text-gray-500">Tài khoản</p>
-                    <p className="text-sm font-medium text-gray-900 truncate">
-                      {user?.email}
-                    </p>
-                  </div>
-                  <button
-                    onClick={() => navigate("/profile")}
-                    className="w-full flex items-center gap-2 px-4 py-2 text-gray-700 hover:bg-gray-100 rounded transition"
-                  >
-                    <HiUser className="w-4 h-4" />
-                    <span className="text-sm">Hồ Sơ Của Tôi</span>
-                  </button>
-                  <button
-                    onClick={() => {
-                      logout();
-                      navigate("/");
-                    }}
-                    className="w-full flex items-center gap-2 px-4 py-2 text-red-600 hover:bg-red-50 rounded transition"
-                  >
-                    <HiArrowRightOnRectangle className="w-4 h-4" />
-                    <span className="text-sm">Đăng Xuất</span>
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
       {/* Welcome Section */}
       <div className="bg-white shadow-sm">
         <div className="max-w-7xl mx-auto px-4 py-8">
