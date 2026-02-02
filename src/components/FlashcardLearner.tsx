@@ -396,7 +396,7 @@ export const FlashcardLearner = ({
                   e.stopPropagation();
                   handleSpeak(currentCard.term);
                 }}
-                className="mt-6 bg-white bg-opacity-20 hover:bg-opacity-30 text-white p-3 rounded-full transition"
+                className="mt-6 bg-white bg-opacity-20 hover:bg-opacity-30 text-white p-3 rounded-full transition cursor-pointer"
               >
                 <HiVolumeUp className="w-6 h-6" />
               </button>

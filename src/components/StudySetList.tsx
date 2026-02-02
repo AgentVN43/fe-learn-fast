@@ -11,6 +11,14 @@ interface StudySetListProps {
   userId?: string;
   onEditClick?: (studySet: StudySet) => void;
   showActions?: boolean;
+  customData?: StudySet[];
+  customPagination?: {
+    page: number;
+    pages: number;
+    total: number;
+    limit: number;
+  };
+  onPageChange?: (page: number) => void;
 }
 
 export const StudySetList = ({
@@ -18,14 +26,17 @@ export const StudySetList = ({
   userId,
   onEditClick,
   showActions = false,
+  customData,
+  customPagination,
+  onPageChange,
 }: StudySetListProps) => {
-  const [page, setPage] = useState(1);
+  const [page, setPage] = useState(customPagination?.page || 1);
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const { user } = useAuth();
   const limit = 10;
 
-  // Fetch study sets
+  // Fetch study sets (skip if customData is provided)
   const { data, isLoading, error } = useQuery({
     queryKey: ["studySets", variant, page, userId],
     queryFn: async () => {
@@ -39,6 +50,7 @@ export const StudySetList = ({
       }
       return response;
     },
+    enabled: !customData, // Skip query if customData is provided
   });
 
   // Delete mutation
@@ -57,7 +69,7 @@ export const StudySetList = ({
     },
   });
 
-  if (isLoading) {
+  if (!customData && isLoading) {
     return (
       <div className="flex justify-center items-center py-8">
         <p className="text-gray-500">Đang tải...</p>
@@ -65,7 +77,7 @@ export const StudySetList = ({
     );
   }
 
-  if (error) {
+  if (!customData && error) {
     return (
       <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
         Lỗi: {(error as Error).message}
@@ -73,8 +85,8 @@ export const StudySetList = ({
     );
   }
 
-  const studySets = (data as any)?.data || [];
-  const pagination = (data as any)?.pagination;
+  const studySets = customData || (data as any)?.data || [];
+  const pagination = customPagination || (data as any)?.pagination;
 
   if (studySets.length === 0) {
     return (
@@ -169,7 +181,7 @@ export const StudySetList = ({
                     );
                   }
                 }}
-                className="flex-1 bg-blue-500 hover:bg-blue-600 text-white px-3 py-2 rounded transition text-sm"
+                className="flex-1 bg-blue-500 hover:bg-blue-600 text-white px-3 py-2 rounded transition text-sm cursor-pointer"
               >
                 Xem Chi Tiết
               </button>
@@ -178,7 +190,7 @@ export const StudySetList = ({
                   likeMutation.mutate(studySet.id || studySet._id || "")
                 }
                 disabled={likeMutation.isPending}
-                className="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-700 px-3 py-2 rounded transition text-sm flex items-center justify-center gap-1 disabled:opacity-50"
+                className="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-700 px-3 py-2 rounded transition text-sm flex items-center justify-center gap-1 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
               >
                 <HiHeart className="w-4 h-4" />
                 {studySet.likes}
@@ -192,9 +204,15 @@ export const StudySetList = ({
       {pagination && pagination.pages > 1 && (
         <div className="flex justify-center gap-2 mt-6">
           <button
-            onClick={() => setPage(Math.max(1, page - 1))}
+            onClick={() => {
+              const newPage = Math.max(1, page - 1);
+              setPage(newPage);
+              if (onPageChange) {
+                onPageChange(newPage);
+              }
+            }}
             disabled={page === 1}
-            className="px-4 py-2 border border-gray-300 rounded disabled:opacity-50 hover:bg-gray-50 transition"
+            className="px-4 py-2 border border-gray-300 rounded disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 transition cursor-pointer"
           >
             Trước
           </button>
@@ -202,9 +220,15 @@ export const StudySetList = ({
             Trang {pagination.page} / {pagination.pages}
           </span>
           <button
-            onClick={() => setPage(Math.min(pagination.pages, page + 1))}
+            onClick={() => {
+              const newPage = Math.min(pagination.pages, page + 1);
+              setPage(newPage);
+              if (onPageChange) {
+                onPageChange(newPage);
+              }
+            }}
             disabled={page === pagination.pages}
-            className="px-4 py-2 border border-gray-300 rounded disabled:opacity-50 hover:bg-gray-50 transition"
+            className="px-4 py-2 border border-gray-300 rounded disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 transition cursor-pointer"
           >
             Tiếp
           </button>

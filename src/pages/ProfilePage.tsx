@@ -116,7 +116,7 @@ export default function ProfilePage() {
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
       <div className="bg-white shadow">
-        <div className="max-w-6xl mx-auto px-4 py-6">
+        <div className="max-w-7xl mx-auto px-4 py-6">
           <button
             onClick={() => navigate("/")}
             className="flex items-center gap-2 text-blue-600 hover:text-blue-700 mb-4 transition"
@@ -134,7 +134,7 @@ export default function ProfilePage() {
       </div>
 
       {/* Main Content */}
-      <div className="max-w-6xl mx-auto px-4 py-8">
+      <div className="max-w-7xl mx-auto px-4 py-8">
         {/* User Info Card */}
         <div className="bg-white rounded-lg shadow-sm p-6 mb-8">
           <h2 className="text-xl font-bold text-gray-900 mb-4">

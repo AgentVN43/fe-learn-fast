@@ -38,7 +38,7 @@ export const StudySetDetail = ({
     <div className="min-h-screen bg-gray-100">
       {/* Header */}
       <div className="bg-white shadow-sm sticky top-0 z-10">
-        <div className="max-w-4xl mx-auto px-4 py-4 flex items-center justify-between">
+        <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
           <button
             onClick={onBack}
             className="flex items-center gap-2 text-blue-500 hover:text-blue-600 transition"
@@ -59,7 +59,7 @@ export const StudySetDetail = ({
       </div>
 
       {/* Content */}
-      <div className="max-w-4xl mx-auto px-4 py-8">
+      <div className="max-w-7xl mx-auto px-4 py-8">
         {/* Title & Description */}
         <div className="bg-white rounded-lg shadow-md p-6 mb-6">
           <h1 className="text-3xl font-bold mb-3">{studySet.title}</h1>
@@ -136,7 +136,7 @@ export const StudySetDetail = ({
         <div className="grid grid-cols-3 gap-3 mb-6">
           <button
             onClick={onLearnClick}
-            className="flex items-center justify-center gap-2 bg-blue-500 hover:bg-blue-600 text-white font-medium py-3 px-4 rounded-lg transition"
+            className="flex items-center justify-center gap-2 bg-blue-500 hover:bg-blue-600 text-white font-medium py-3 px-4 rounded-lg transition cursor-pointer"
           >
             <HiPlay className="w-5 h-5" />
             <span className="hidden sm:inline">Học </span>
@@ -144,7 +144,7 @@ export const StudySetDetail = ({
 
           <button
             onClick={onTestClick}
-            className="flex items-center justify-center gap-2 bg-green-500 hover:bg-green-600 text-white font-medium py-3 px-4 rounded-lg transition"
+            className="flex items-center justify-center gap-2 bg-green-500 hover:bg-green-600 text-white font-medium py-3 px-4 rounded-lg transition cursor-pointer"
           >
             <HiClipboardList className="w-5 h-5" />
             <span className="hidden sm:inline">Kiểm Tra</span>
@@ -152,14 +152,14 @@ export const StudySetDetail = ({
 
           <button
             onClick={onReviewClick}
-            className="flex items-center justify-center gap-2 bg-blue-500 hover:bg-blue-600 text-white font-medium py-3 px-4 rounded-lg transition"
+            className="flex items-center justify-center gap-2 bg-blue-500 hover:bg-blue-600 text-white font-medium py-3 px-4 rounded-lg transition cursor-pointer"
           >
             <HiPlay className="w-5 h-5" />
             <span className="hidden sm:inline">Ôn tập</span>
           </button>
           <button
             onClick={onReflexClick}
-            className="flex items-center justify-center gap-2 bg-yellow-500 hover:bg-yellow-600 text-white font-medium py-3 px-4 rounded-lg transition"
+            className="flex items-center justify-center gap-2 bg-yellow-500 hover:bg-yellow-600 text-white font-medium py-3 px-4 rounded-lg transition cursor-pointer"
           >
             <HiBolt className="w-5 h-5" />
             <span className="hidden sm:inline">Phản Xạ</span>
