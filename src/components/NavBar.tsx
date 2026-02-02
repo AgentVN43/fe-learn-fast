@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useAuth } from "../hooks/useAuth";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { HamburgerMenu } from "./HamburgerMenu";
-import { HiSearch, HiChevronDown, HiUser, HiLogout } from "react-icons/hi";
+import { HiSearch, HiChevronDown, HiUser, HiLogout, HiFolder } from "react-icons/hi";
 
 interface NavBarProps {
   onCreateClick?: () => void;
@@ -85,6 +85,15 @@ export const NavBar = ({ onCreateClick }: NavBarProps) => {
               >
                 Bộ Học Tập
               </Link>
+
+              <button
+               onClick={() => navigate("/profile/folder")}
+               className="flex items-center gap-2 hover:text-gray-300 transition whitespace-nowrap"
+              >
+               <HiFolder className="w-5 h-5" />
+               <span className="text-sm">Thư Mục</span>
+              </button>
+
               {onCreateClick && (
                 <button
                   onClick={onCreateClick}

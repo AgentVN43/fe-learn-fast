@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Sheet } from "react-modal-sheet";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useNavigate } from "react-router-dom";
 import { studySetService } from "../services/studySetService";
 import type { StudySetFormData } from "../types";
 
@@ -8,13 +9,16 @@ interface StudySetFormProps {
   isOpen: boolean;
   onClose: () => void;
   initialData?: StudySetFormData & { id?: string };
+  onSuccess?: () => void;
 }
 
 export const StudySetForm = ({
   isOpen,
   onClose,
   initialData,
+  onSuccess,
 }: StudySetFormProps) => {
+  const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [formData, setFormData] = useState<StudySetFormData>(
     initialData || {
@@ -50,9 +54,16 @@ export const StudySetForm = ({
   // Create mutation
   const createMutation = useMutation({
     mutationFn: (data: StudySetFormData) => studySetService.create(data),
-    onSuccess: () => {
+    onSuccess: (response: any) => {
+      const studySetId = response.data?.id || response.data?._id;
       queryClient.invalidateQueries({ queryKey: ["studySets"] });
       handleClose();
+      if (onSuccess) {
+        onSuccess();
+      } else if (studySetId) {
+        // Auto redirect to study set detail
+        navigate(`/study-sets/${studySetId}`);
+      }
     },
   });
 

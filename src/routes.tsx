@@ -23,6 +23,8 @@ import AdminUsersPage from "./pages/admin/AdminUsersPage";
 import AdminStudySetsPage from "./pages/admin/AdminStudySetsPage";
 import AdminStudySetDetailPage from "./pages/admin/AdminStudySetDetailPage";
 import AdminFlashcardsPage from "./pages/admin/AdminFlashcardsPage";
+import FolderPage from "./pages/FolderPage";
+import FolderDetailPage from "./pages/FolderDetailPage";
 import { ProtectedRoute } from "./components/routing/ProtectedRoute";
 export const router = createBrowserRouter([
   // 🌍 Public (no layout)
@@ -59,6 +61,18 @@ export const router = createBrowserRouter([
           {
             path: "/profile",
             element: <ProfilePage />,
+          },
+          {
+            path: "/profile/folder",
+            element: <FolderPage />,
+          },
+          {
+            path: "/profile/folders/:folderId",
+            element: <FolderDetailPage />,
+          },
+            {
+            path: "/profile/study-sets/:studySetId",
+            element: <AdminStudySetDetailPage />,
           },
           {
             path: "/my-study-sets",
