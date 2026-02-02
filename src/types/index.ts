@@ -96,3 +96,14 @@ export interface Actress {
   movieCount?: number;
   movies?: Movie[];
 }
+
+// Folder Types
+export interface Folder {
+  id?: string;
+  _id?: string;
+  name: string;
+  description?: string;
+  userId: string;
+  createdAt?: string;
+  updatedAt?: string;
+}
