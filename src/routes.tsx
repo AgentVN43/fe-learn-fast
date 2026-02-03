@@ -14,8 +14,8 @@ import MyStudySetsPage from "./pages/MyStudySetsPage";
 import DebugPage from "./pages/DebugPage";
 
 // Study Sets
-import StudySetsIndexPage from "./components/study-sets/StudySetsIndexPage";
 import StudySetDetailPage from "./components/study-sets/StudySetDetailPage";
+import StudySetsPage from "./pages/StudySetsPage";
 
 // Admin
 import AdminDashboard from "./pages/admin/AdminDashboard";
@@ -47,7 +47,7 @@ export const router = createBrowserRouter([
       },
       {
         path: "/study-sets",
-        element: <StudySetsIndexPage />,
+        element: <StudySetsPage />,
       },
       {
         path: "/debug",
