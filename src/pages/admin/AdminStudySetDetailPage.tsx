@@ -3,6 +3,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState, useEffect } from "react";
 import { HiArrowLeft, HiTrash, HiPencil, HiX, HiPlus } from "react-icons/hi";
 import { authService } from "../../services/authService";
+import { ImportFlashcardsModal } from "../../components/ImportFlashcardsModal";
 
 interface Flashcard {
   id: string;
@@ -29,11 +30,21 @@ export default function AdminStudySetDetailPage() {
   console.log("studySetId:", studySetId);
   const queryClient = useQueryClient();
   const [isFormOpen, setIsFormOpen] = useState(false);
+  const [isImportModalOpen, setIsImportModalOpen] = useState(false);
   const [editingCardId, setEditingCardId] = useState<string | null>(null);
   const [cardFormData, setCardFormData] = useState({
     term: "",
     definition: "",
+    difficulty: "medium" as "easy" | "medium" | "hard",
+    image: "",
+    explanation: {
+      grammar: "",
+      context: "",
+      example_expand: "",
+      analysis: [] as Array<{ key: string; note: string }>,
+    },
   });
+  const [analysisInput, setAnalysisInput] = useState({ key: "", note: "" });
 
   // Log params
   useEffect(() => {
@@ -146,7 +157,16 @@ export default function AdminStudySetDetailPage() {
     setCardFormData({
       term: "",
       definition: "",
+      difficulty: "medium",
+      image: "",
+      explanation: {
+        grammar: "",
+        context: "",
+        example_expand: "",
+        analysis: [],
+      },
     });
+    setAnalysisInput({ key: "", note: "" });
   };
 
   const handleEditCard = (flashcard: Flashcard) => {
@@ -154,8 +174,44 @@ export default function AdminStudySetDetailPage() {
     setCardFormData({
       term: flashcard.term,
       definition: flashcard.definition,
+      difficulty: (flashcard as any).difficulty || "medium",
+      image: (flashcard as any).image || "",
+      explanation: (flashcard as any).explanation || {
+        grammar: "",
+        context: "",
+        example_expand: "",
+        analysis: [],
+      },
     });
     setIsFormOpen(true);
+  };
+
+  const handleAddAnalysis = () => {
+    if (analysisInput.key.trim() && analysisInput.note.trim()) {
+      setCardFormData({
+        ...cardFormData,
+        explanation: {
+          ...cardFormData.explanation,
+          analysis: [
+            ...cardFormData.explanation.analysis,
+            { key: analysisInput.key, note: analysisInput.note },
+          ],
+        },
+      });
+      setAnalysisInput({ key: "", note: "" });
+    }
+  };
+
+  const handleRemoveAnalysis = (index: number) => {
+    setCardFormData({
+      ...cardFormData,
+      explanation: {
+        ...cardFormData.explanation,
+        analysis: cardFormData.explanation.analysis.filter(
+          (_, i) => i !== index
+        ),
+      },
+    });
   };
 
   const handleSubmitCard = (e: React.FormEvent) => {
@@ -171,8 +227,25 @@ export default function AdminStudySetDetailPage() {
       return;
     }
 
-    console.log("Submitting form with data:", cardFormData);
-    saveCardMutation.mutate(cardFormData);
+    const submitData = {
+      term: cardFormData.term,
+      definition: cardFormData.definition,
+      difficulty: cardFormData.difficulty,
+      image: cardFormData.image || undefined,
+      explanation: {
+        grammar: cardFormData.explanation.grammar || undefined,
+        context: cardFormData.explanation.context || undefined,
+        example_expand: cardFormData.explanation.example_expand || undefined,
+        analysis:
+          cardFormData.explanation.analysis.length > 0
+            ? cardFormData.explanation.analysis
+            : undefined,
+      },
+    };
+
+    console.log("Submitting form with data:", submitData);
+    console.log("Full cardFormData:", cardFormData);
+    saveCardMutation.mutate(submitData as any);
   };
 
 
@@ -271,13 +344,21 @@ export default function AdminStudySetDetailPage() {
         <div className="bg-white rounded-lg shadow-md">
           <div className="flex justify-between items-center p-6 border-b">
             <h2 className="text-2xl font-bold">Thẻ Học ({flashcards.length})</h2>
-            <button
-              onClick={() => setIsFormOpen(true)}
-              className="flex items-center gap-2 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition"
-            >
-              <HiPlus className="w-5 h-5" />
-              <span>Thêm Thẻ</span>
-            </button>
+            <div className="flex gap-2">
+              <button
+                onClick={() => setIsFormOpen(true)}
+                className="flex items-center gap-2 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition"
+              >
+                <HiPlus className="w-5 h-5" />
+                <span>Thêm Thẻ</span>
+              </button>
+              <button
+                onClick={() => setIsImportModalOpen(true)}
+                className="text-blue-600 hover:text-blue-700 underline font-medium transition"
+              >
+                Import
+              </button>
+            </div>
           </div>
 
           {flashcards.length === 0 ? (
@@ -350,7 +431,7 @@ export default function AdminStudySetDetailPage() {
               </button>
             </div>
 
-            <form onSubmit={handleSubmitCard} className="space-y-4">
+            <form onSubmit={handleSubmitCard} className="space-y-4 max-h-96 overflow-y-auto">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Thuật Ngữ
@@ -381,7 +462,179 @@ export default function AdminStudySetDetailPage() {
                 />
               </div>
 
-              <div className="flex gap-3 pt-4">
+              {/* Difficulty */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Mức Độ
+                </label>
+                <select
+                  value={cardFormData.difficulty}
+                  onChange={(e) =>
+                    setCardFormData({
+                      ...cardFormData,
+                      difficulty: e.target.value as "easy" | "medium" | "hard",
+                    })
+                  }
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  <option value="easy">Dễ</option>
+                  <option value="medium">Trung Bình</option>
+                  <option value="hard">Khó</option>
+                </select>
+              </div>
+
+              {/* Image */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Ảnh (URL)
+                </label>
+                <input
+                  type="url"
+                  value={cardFormData.image}
+                  onChange={(e) =>
+                    setCardFormData({ ...cardFormData, image: e.target.value })
+                  }
+                  placeholder="https://..."
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+
+              {/* Explanation */}
+              <div className="border-t pt-4">
+                <h3 className="text-sm font-semibold text-gray-900 mb-3">
+                  Giải Thích
+                </h3>
+
+                <div className="space-y-3">
+                  <div>
+                    <label className="block text-xs font-medium text-gray-700 mb-1">
+                      Ngữ Pháp
+                    </label>
+                    <textarea
+                      value={cardFormData.explanation.grammar}
+                      onChange={(e) =>
+                        setCardFormData({
+                          ...cardFormData,
+                          explanation: {
+                            ...cardFormData.explanation,
+                            grammar: e.target.value,
+                          },
+                        })
+                      }
+                      placeholder="Giải thích về ngữ pháp..."
+                      rows={2}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-xs"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-medium text-gray-700 mb-1">
+                      Ngữ Cảnh
+                    </label>
+                    <textarea
+                      value={cardFormData.explanation.context}
+                      onChange={(e) =>
+                        setCardFormData({
+                          ...cardFormData,
+                          explanation: {
+                            ...cardFormData.explanation,
+                            context: e.target.value,
+                          },
+                        })
+                      }
+                      placeholder="Ngữ cảnh sử dụng..."
+                      rows={2}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-xs"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-medium text-gray-700 mb-1">
+                      Ví Dụ Mở Rộng
+                    </label>
+                    <input
+                      type="text"
+                      value={cardFormData.explanation.example_expand}
+                      onChange={(e) =>
+                        setCardFormData({
+                          ...cardFormData,
+                          explanation: {
+                            ...cardFormData.explanation,
+                            example_expand: e.target.value,
+                          },
+                        })
+                      }
+                      placeholder="Ví dụ mở rộng..."
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-xs"
+                    />
+                  </div>
+
+                  {/* Analysis */}
+                  <div>
+                    <label className="block text-xs font-medium text-gray-700 mb-2">
+                      Phân Tích
+                    </label>
+                    <div className="flex gap-2 mb-2">
+                      <input
+                        type="text"
+                        value={analysisInput.key}
+                        onChange={(e) =>
+                          setAnalysisInput({
+                            ...analysisInput,
+                            key: e.target.value,
+                          })
+                        }
+                        placeholder="Từ khoá"
+                        className="flex-1 px-2 py-1 border border-gray-300 rounded text-xs"
+                      />
+                      <input
+                        type="text"
+                        value={analysisInput.note}
+                        onChange={(e) =>
+                          setAnalysisInput({
+                            ...analysisInput,
+                            note: e.target.value,
+                          })
+                        }
+                        placeholder="Ghi chú"
+                        className="flex-1 px-2 py-1 border border-gray-300 rounded text-xs"
+                      />
+                      <button
+                        type="button"
+                        onClick={handleAddAnalysis}
+                        className="px-2 py-1 bg-blue-500 hover:bg-blue-600 text-white rounded text-xs"
+                      >
+                        Thêm
+                      </button>
+                    </div>
+                    {cardFormData.explanation.analysis.length > 0 && (
+                      <div className="space-y-1">
+                        {cardFormData.explanation.analysis.map(
+                          (item, index) => (
+                            <div
+                              key={index}
+                              className="flex justify-between items-center p-1 bg-gray-100 rounded text-xs"
+                            >
+                              <span>
+                                <strong>{item.key}</strong>: {item.note}
+                              </span>
+                              <button
+                                type="button"
+                                onClick={() => handleRemoveAnalysis(index)}
+                                className="text-red-500 hover:text-red-700"
+                              >
+                                ×
+                              </button>
+                            </div>
+                          )
+                        )}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex gap-3 pt-4 border-t">
                 <button
                   type="button"
                   onClick={handleCardFormClose}
@@ -400,6 +653,16 @@ export default function AdminStudySetDetailPage() {
             </form>
           </div>
         </div>
+      )}
+
+      {/* Import Flashcards Modal */}
+      {studySetId && (
+        <ImportFlashcardsModal
+          isOpen={isImportModalOpen}
+          onClose={() => setIsImportModalOpen(false)}
+          studySetId={studySetId}
+          onSuccess={() => refetch()}
+        />
       )}
     </div>
   );

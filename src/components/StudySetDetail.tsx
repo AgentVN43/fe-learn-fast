@@ -1,8 +1,9 @@
 import { useState } from "react";
-import { HiArrowLeft, HiHeart, HiPlay, HiClipboardList } from "react-icons/hi";
+import { HiArrowLeft, HiHeart, HiPlay, HiClipboardList, HiInformationCircle } from "react-icons/hi";
 import { HiBolt } from "react-icons/hi2";
 import type { StudySet, Flashcard } from "../types";
 import type { ProgressStats } from "../services/progressService";
+import { ExplanationModal } from "./ExplanationModal";
 
 interface StudySetDetailProps {
   studySet: StudySet;
@@ -27,6 +28,8 @@ export const StudySetDetail = ({
 }: StudySetDetailProps) => {
   const [liked, setLiked] = useState(false);
   const [activeTab, setActiveTab] = useState<"overview" | "cards">("overview");
+  const [selectedCard, setSelectedCard] = useState<Flashcard | null>(null);
+  const [isExplanationOpen, setIsExplanationOpen] = useState(false);
 
   const handleLike = () => {
     setLiked(!liked);
@@ -274,7 +277,7 @@ export const StudySetDetail = ({
                       <div className="flex gap-4">
                         {/* Card Image */}
                         {card.image && (
-                          <div className="flex-shrink-0">
+                          <div className="shrink-0">
                             <img
                               src={card.image}
                               alt={card.term}
@@ -308,12 +311,26 @@ export const StudySetDetail = ({
                             )}
                           </div>
 
-                          <h4 className="font-bold text-gray-800 mb-1">
-                            {card.term}
-                          </h4>
-                          <p className="text-gray-600 text-sm">
-                            {card.definition}
-                          </p>
+                          <div className="flex justify-between items-start gap-3">
+                            <div className="flex-1">
+                              <h4 className="font-bold text-gray-800 mb-1">
+                                {card.term}
+                              </h4>
+                              <p className="text-gray-600 text-sm">
+                                {card.definition}
+                              </p>
+                            </div>
+                            <button
+                              onClick={() => {
+                                setSelectedCard(card);
+                                setIsExplanationOpen(true);
+                              }}
+                              className="text-blue-500 hover:text-blue-700 transition flex-shrink-0 p-1"
+                              title="Xem giải thích"
+                            >
+                              <HiInformationCircle className="w-5 h-5" />
+                            </button>
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -324,6 +341,26 @@ export const StudySetDetail = ({
           </div>
         </div>
       </div>
+
+      {/* Explanation Modal */}
+      {selectedCard && (() => {
+        const cardWithExplanation = (studySet.flashcards || []).find(
+          (card) =>
+            (card.id || card._id) === (selectedCard.id || selectedCard._id),
+        );
+        return (
+          <ExplanationModal
+            isOpen={isExplanationOpen}
+            onClose={() => {
+              setIsExplanationOpen(false);
+              setSelectedCard(null);
+            }}
+            term={selectedCard.term}
+            definition={selectedCard.definition}
+            explanation={(cardWithExplanation as any)?.explanation}
+          />
+        );
+      })()}
     </div>
   );
 };

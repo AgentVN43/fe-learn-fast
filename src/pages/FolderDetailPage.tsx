@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useAuth } from "../hooks/useAuth";
-import { useFolder } from "../hooks/useFolder";
+import { useFolder } from "../hooks/useFolderHooks";
 import { useNavigate, useParams } from "react-router-dom";
 import { HiArrowLeft, HiFolder, HiTrash, HiPencil, HiPlus } from "react-icons/hi";
 import { StudySetForm } from "../components/StudySetForm";

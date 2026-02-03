@@ -55,4 +55,18 @@ export const folderService = {
       }
     );
   },
+
+  // Import flashcards to study set
+  importFlashcards: async (
+    studySetId: string,
+    flashcards: Array<{ term: string; definition: string }>
+  ) => {
+    return apiCall<{ success: boolean; message: string; data: any }>(
+      `/flashcards/study-set/${studySetId}/import`,
+      {
+        method: "POST",
+        body: JSON.stringify({ studySetId, flashcards }),
+      }
+    );
+  },
 };

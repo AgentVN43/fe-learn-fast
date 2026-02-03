@@ -1,15 +1,17 @@
 import { useState, useEffect } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { HiArrowLeft, HiVolumeUp, HiStar } from "react-icons/hi";
-import type { Flashcard } from "../types";
+import { HiArrowLeft, HiVolumeUp, HiStar, HiInformationCircle } from "react-icons/hi";
+import type { Flashcard, StudySet } from "../types";
 import { progressService } from "../services/progressService";
 import { useMasterFlashcard } from "../hooks/useProgress";
+import { ExplanationModal } from "./ExplanationModal";
 
 interface FlashcardLearnerProps {
   flashcards: Flashcard[];
   title: string;
   onBack: () => void;
   studySetId?: string;
+  studySet?: StudySet;
 }
 
 interface CardState extends Flashcard {
@@ -22,6 +24,7 @@ export const FlashcardLearner = ({
   title,
   onBack,
   studySetId,
+  studySet,
 }: FlashcardLearnerProps) => {
   const queryClient = useQueryClient();
 
@@ -78,7 +81,10 @@ export const FlashcardLearner = ({
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isFlipped, setIsFlipped] = useState(false);
   const [isComplete, setIsComplete] = useState(false);
-  const [selectedDifficulty, setSelectedDifficulty] = useState<"easy" | "medium" | "hard" | null>(null);
+  const [selectedDifficulty, setSelectedDifficulty] = useState<
+    "easy" | "medium" | "hard" | null
+  >(null);
+  const [isExplanationOpen, setIsExplanationOpen] = useState(false);
 
   // Mutation: Mark flashcard as mastered
   const masterMutation = useMasterFlashcard();
@@ -128,10 +134,13 @@ export const FlashcardLearner = ({
         starred: false,
         learned: false,
       }));
-      
+
       // Only reset state if truly different (new set of cards)
       if (cards.length === 0 || cards[0]?.term !== newCards[0]?.term) {
-        console.log("📝 Updating cards from prop, new first card:", newCards[0]?.term);
+        console.log(
+          "📝 Updating cards from prop, new first card:",
+          newCards[0]?.term,
+        );
         setCards(newCards);
         setCurrentIndex(0);
         setIsFlipped(false);
@@ -143,6 +152,9 @@ export const FlashcardLearner = ({
   const currentCard = cards[currentIndex];
   const progress = ((currentIndex + 1) / cards.length) * 100;
   const starredCount = cards.filter((c) => c.starred).length;
+
+
+  console.log(flashcards)
 
   const handleNext = () => {
     if (currentIndex < cards.length - 1) {
@@ -192,40 +204,147 @@ export const FlashcardLearner = ({
   //   }
   // };
 
+  // const handleSpeak = (text: string) => {
+  //   if ("speechSynthesis" in window) {
+  //     window.speechSynthesis.cancel();
+  //     const utterance = new SpeechSynthesisUtterance(text);
+  //     //utterance.lang = "en-US";
+  //     utterance.lang = "zh-CN";
+
+  //     // Ưu tiên giọng đọc tự nhiên nhất cho luyện nghe
+  //     const voices = window.speechSynthesis.getVoices();
+  //     const voicePriority = [
+  //       "Google US English", // Giọng Google tự nhiên
+  //       "Microsoft Zira", // Giọng nữ Microsoft
+  //       "Samantha", // Giọng macOS tự nhiên
+  //       "Karen", // Giọng nữ Australia
+  //       "Daniel", // Giọng nam Anh
+  //       "Alex", // Giọng nam macOS
+  //     ];
+
+  //     for (const voiceName of voicePriority) {
+  //       const voice = voices.find((v) => v.name.includes(voiceName));
+  //       if (voice) {
+  //         utterance.voice = voice;
+  //         break;
+  //       }
+  //     }
+
+  //     // Tốc độ chậm rõ ràng cho người học
+  //     utterance.rate = 0.85;
+  //     utterance.pitch = 1.0;
+  //     utterance.volume = 1.0;
+
+  //     window.speechSynthesis.speak(utterance);
+  //   }
+  // };
+
   const handleSpeak = (text: string) => {
     if ("speechSynthesis" in window) {
+      // Hàm kiểm tra xem text có chứa ký tự tiếng Trung không
+      const containsChinese = (str: string): boolean => {
+        return /[\u4e00-\u9fff]/.test(str);
+      };
+
       window.speechSynthesis.cancel();
       const utterance = new SpeechSynthesisUtterance(text);
-      utterance.lang = "en-US";
 
-      // Ưu tiên giọng đọc tự nhiên nhất cho luyện nghe
+      // Tự động phát hiện ngôn ngữ
+      if (containsChinese(text)) {
+        utterance.lang = "zh-CN";
+      } else {
+        utterance.lang = "en-US";
+      }
+
+      // Chọn giọng đọc ưu tiên theo ngôn ngữ
       const voices = window.speechSynthesis.getVoices();
-      const voicePriority = [
-        "Google US English", // Giọng Google tự nhiên
-        "Microsoft Zira", // Giọng nữ Microsoft
-        "Samantha", // Giọng macOS tự nhiên
-        "Karen", // Giọng nữ Australia
-        "Daniel", // Giọng nam Anh
-        "Alex", // Giọng nam macOS
-      ];
 
-      for (const voiceName of voicePriority) {
-        const voice = voices.find((v) => v.name.includes(voiceName));
+      // Ưu tiên giọng tiếng Trung
+      const chineseVoices = voices.filter(
+        (voice) =>
+          voice.lang.startsWith("zh") ||
+          voice.name.toLowerCase().includes("chinese") ||
+          voice.name.toLowerCase().includes("zh"),
+      );
+
+      // Ưu tiên giọng tiếng Anh (nếu không phải tiếng Trung)
+      const englishVoices = voices.filter(
+        (voice) =>
+          voice.lang.startsWith("en") ||
+          voice.name.toLowerCase().includes("english") ||
+          voice.name.toLowerCase().includes("us"),
+      );
+
+      // Sắp xếp độ ưu tiên giọng đọc
+      const voicePriority = {
+        "zh-CN": [
+          "Ting-Ting", // Giọng nữ tiếng Trung macOS/iOS
+          "Mei-Jia", // Giọng nữ tiếng Trung
+          "Sin-Ji", // Giọng nữ tiếng Trung (Hong Kong)
+          "Microsoft Huihui", // Giọng Microsoft tiếng Trung
+          "Google 普通话", // Giọng Google tiếng Trung
+          "Chinese", // Giọng tiếng Trung chung
+          "zh", // Giọng có zh trong tên
+        ],
+        "en-US": [
+          "Google US English",
+          "Microsoft Zira",
+          "Samantha",
+          "Karen",
+          "Daniel",
+          "Alex",
+        ],
+      };
+
+      // Chọn giọng theo ngôn ngữ
+      const targetLang = utterance.lang as keyof typeof voicePriority;
+      const priorityList = voicePriority[targetLang] || voicePriority["en-US"];
+
+      // Tìm giọng ưu tiên
+      for (const voiceName of priorityList) {
+        const voice = voices.find((v) =>
+          v.name.toLowerCase().includes(voiceName.toLowerCase()),
+        );
         if (voice) {
           utterance.voice = voice;
           break;
         }
       }
 
-      // Tốc độ chậm rõ ràng cho người học
-      utterance.rate = 0.85;
-      utterance.pitch = 1.0;
+      // Nếu không tìm thấy giọng ưu tiên, chọn giọng theo ngôn ngữ
+      if (!utterance.voice) {
+        if (utterance.lang === "zh-CN" && chineseVoices.length > 0) {
+          utterance.voice = chineseVoices[0];
+        } else if (englishVoices.length > 0) {
+          utterance.voice = englishVoices[0];
+        }
+      }
+
+      // Điều chỉnh tốc độ theo ngôn ngữ
+      if (utterance.lang === "zh-CN") {
+        // Tiếng Trung cần đọc chậm hơn để nghe rõ pinyin
+        utterance.rate = 0.75;
+        utterance.pitch = 1.0;
+      } else {
+        utterance.rate = 0.85;
+        utterance.pitch = 1.0;
+      }
+
       utterance.volume = 1.0;
+
+      // Xử lý vấn đề voices chưa sẵn sàng
+      if (voices.length === 0) {
+        window.speechSynthesis.onvoiceschanged = () => {
+          handleSpeak(text); // Gọi lại khi voices đã sẵn sàng
+        };
+        return;
+      }
 
       window.speechSynthesis.speak(utterance);
     }
   };
 
+  
   const handleRestart = () => {
     setCurrentIndex(0);
     setIsFlipped(false);
@@ -360,10 +479,11 @@ export const FlashcardLearner = ({
       {/* Main Content */}
       <div className="max-w-2xl mx-auto px-4 py-8">
         {/* Card */}
-        <div
-          className="h-96 bg-white rounded-xl shadow-lg cursor-pointer perspective mb-6 transition-transform duration-300"
-          onClick={() => setIsFlipped(!isFlipped)}
-        >
+          <div className="relative">
+          <div
+            className="h-96 bg-white rounded-xl shadow-lg cursor-pointer perspective mb-6 transition-transform duration-300"
+            onClick={() => setIsFlipped(!isFlipped)}
+          >
           <div
             className={`relative w-full h-full transition-transform duration-500 ${
               isFlipped ? "rotate-y-180" : ""
@@ -430,9 +550,19 @@ export const FlashcardLearner = ({
               </button>
             </div>
           </div>
-        </div>
+          </div>
 
-        {/* Card Image */}
+          {/* Explanation Button */}
+          <button
+          onClick={() => setIsExplanationOpen(true)}
+          className="absolute top-4 right-4 bg-blue-500 hover:bg-blue-600 text-white p-2 rounded-full transition"
+          title="Xem giải thích"
+          >
+          <HiInformationCircle className="w-5 h-5" />
+          </button>
+          </div>
+
+          {/* Card Image */}
         {currentCard.image && (
           <div className="mb-6">
             <img
@@ -563,7 +693,11 @@ export const FlashcardLearner = ({
           </button>
           <button
             onClick={handleSubmitReview}
-            disabled={!selectedDifficulty || reviewMutation.isPending || masterMutation.isPending}
+            disabled={
+              !selectedDifficulty ||
+              reviewMutation.isPending ||
+              masterMutation.isPending
+            }
             className="flex-1 px-4 py-3 bg-blue-500 hover:bg-blue-600 disabled:bg-gray-400 text-white rounded-lg font-medium transition"
           >
             {reviewMutation.isPending || masterMutation.isPending
@@ -574,6 +708,23 @@ export const FlashcardLearner = ({
           </button>
         </div>
       </div>
+
+      {/* Explanation Modal */}
+      {(() => {
+        const cardWithExplanation = studySet?.flashcards?.find(
+          (card) =>
+            (card.id || card._id) === (currentCard.id || currentCard._id),
+        );
+        return (
+          <ExplanationModal
+            isOpen={isExplanationOpen}
+            onClose={() => setIsExplanationOpen(false)}
+            term={currentCard.term}
+            definition={currentCard.definition}
+            explanation={(cardWithExplanation as any)?.explanation}
+          />
+        );
+      })()}
     </div>
   );
 };

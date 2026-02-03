@@ -321,6 +321,7 @@ export default function StudySetDetailPage() {
         title={studySet.title}
         onBack={handleBackToDetail}
         studySetId={studySetId}
+        studySet={studySet}
       />
     );
   }
@@ -437,6 +438,7 @@ export default function StudySetDetailPage() {
         title={`${studySet.title} - Ôn Tập`}
         onBack={handleBackToDetail}
         studySetId={studySetId}
+        studySet={studySet}
       />
     );
   }
