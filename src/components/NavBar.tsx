@@ -76,7 +76,7 @@ export const NavBar = ({ onCreateClick }: NavBarProps) => {
                 Trang Chủ
               </Link>
 
-              <Link
+              {/* <Link
                 to="/study-sets"
                 className={`transition whitespace-nowrap ${isActive("/study-sets")
                     ? "text-blue-400 font-semibold"
@@ -84,14 +84,14 @@ export const NavBar = ({ onCreateClick }: NavBarProps) => {
                   }`}
               >
                 Bộ Học Tập
-              </Link>
+              </Link> */}
 
               <button
                onClick={() => navigate("/profile/folder")}
                className="flex items-center gap-2 hover:text-gray-300 transition whitespace-nowrap"
               >
                <HiFolder className="w-5 h-5" />
-               <span className="text-sm">Thư Mục</span>
+               <span className="text-sm">Courses</span>
               </button>
 
               {onCreateClick && (
@@ -99,7 +99,7 @@ export const NavBar = ({ onCreateClick }: NavBarProps) => {
                   onClick={onCreateClick}
                   className="hover:text-gray-300 transition whitespace-nowrap"
                 >
-                  Tạo Mới
+                  Lesson
                 </button>
               )}
 
