@@ -15,7 +15,7 @@ interface UserStats {
 }
 
 export default function HomePage() {
-  const { user, logout } = useAuth();
+  const { user } = useAuth();
   const navigate = useNavigate();
 
   // Fetch user's study sets (always call hooks, even if user is null)

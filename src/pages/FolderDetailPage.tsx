@@ -111,7 +111,9 @@ export default function FolderDetailPage() {
                 )}
                 <p className="text-sm text-gray-500 mt-4">
                   Tạo ngày{" "}
-                  {new Date(folder.createdAt).toLocaleDateString("vi-VN")}
+                  {folder.createdAt
+                    ? new Date(folder.createdAt).toLocaleDateString("vi-VN")
+                    : "N/A"}
                 </p>
               </div>
             </div>
