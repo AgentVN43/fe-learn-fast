@@ -106,4 +106,6 @@ export interface Folder {
   userId: string;
   createdAt?: string;
   updatedAt?: string;
+  studySetCount?: number;
+  studySets?: StudySet[];
 }
